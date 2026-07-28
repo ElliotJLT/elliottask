@@ -49,3 +49,19 @@ Ask about people who were not surveyed and the persona declines, says plainly th
 ## Transcripts survive a reload
 
 "I keep losing my chats after I log off" is answered by actually persisting them, not by showing a saved-interviews list that forgets. Transcripts are written to browser storage and read back through React's external-store API, so a saved interview is still there after a refresh.
+
+## Provenance sits with the evidence, not with the button
+
+"Where answers come from" explains the quote and the profile, so it closes the record after both rather than sitting beside the interview button. In the footer it reads as a footnote to the action, which is the wrong thing to qualify.
+
+## One call to action on the record, not a menu of questions
+
+The record's job is deciding whether this respondent is worth an interview, not composing the first question. Openings are offered inside the interview, one click later, so putting them on the record too would leave two screens maintaining one set of content, which is what made the preview card worth deleting.
+
+## An evidence summary for the whole interview
+
+Per-claim markers answer "is this sentence grounded". The sources panel answers the question a client actually carries into a decision: how much of this conversation was evidence and how much was the model reasoning. It counts grounded against extrapolated across the transcript and lists each source once, with how many claims leaned on it.
+
+## Modes hand width to each other
+
+Every column is flexible with an animated cap, so moving from browsing to a record to an interview is one panel giving width to the next rather than a cut between layouts. The society fades as it goes so its contents never reflow in front of the user.

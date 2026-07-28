@@ -15,7 +15,7 @@ import type { Citation, Message, Persona, SurveyResponse } from "@/lib/types";
 import { MessageThread, ThinkingRow } from "./message-thread";
 import { OptionTag } from "./option-tag";
 import { PersonaMark } from "./persona-mark";
-import { ProvenanceNote } from "./provenance-note";
+import { SourceSummary } from "./source-summary";
 
 /**
  * The interview. By this point the respondent has been read and chosen, so the
@@ -46,6 +46,7 @@ export function ConversationPanel({
   );
   const [draft, setDraft] = useState("");
   const [waiting, setWaiting] = useState(false);
+  const [showSources, setShowSources] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,43 +101,66 @@ export function ConversationPanel({
       aria-label={`Interview with ${persona.name}`}
       className="flex h-full w-full min-w-0 flex-col bg-surface"
     >
-      <header className="shrink-0 border-b border-border bg-card px-8 py-4">
-        <div className="mx-auto flex max-w-[52rem] items-center gap-4">
+      <header className="shrink-0 border-b border-border bg-card px-6 py-3">
+        <div className="flex items-center gap-3">
           <Link
             href={`/respondents/${persona.id}`}
-            className="group -ml-2 flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
+            className="group flex shrink-0 items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-150 hover:bg-surface-sunk"
           >
             <span
               aria-hidden
-              className="transition-transform duration-150 group-hover:-translate-x-0.5"
+              className="text-ink-muted transition-transform duration-150 group-hover:-translate-x-0.5"
             >
               &larr;
             </span>
-            Record
-          </Link>
-
-          <div className="flex min-w-0 flex-1 items-center gap-3">
             <PersonaMark
               name={persona.name}
               choice={response?.choice ?? ""}
               personaId={persona.id}
               size="sm"
             />
-            <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
-              <h2 className="font-medium text-ink">{persona.name}</h2>
-              <p className="truncate text-[0.8125rem] text-ink-muted">
-                {persona.role}
-              </p>
-            </div>
-            {response ? <OptionTag option={response.choice} /> : null}
-          </div>
+            <span className="font-medium text-ink">{persona.name}</span>
+          </Link>
 
-          <ProvenanceNote name={firstName} />
+          {response ? <OptionTag option={response.choice} /> : null}
+
+          <div className="flex-1" />
+
+          <button
+            type="button"
+            onClick={() => setShowSources((open) => !open)}
+            aria-expanded={showSources}
+            className={`flex shrink-0 items-center gap-2 rounded-lg border px-3 py-1.5 text-[0.8125rem] font-medium transition-colors duration-150 ${
+              showSources
+                ? "border-border-strong bg-surface-sunk text-ink"
+                : "border-border bg-card text-ink-muted hover:border-border-strong hover:text-ink"
+            }`}
+          >
+            Sources
+            <span className="rounded-full bg-surface-sunk px-1.5 text-[0.75rem] tabular-nums">
+              {
+                new Set(
+                  transcript.citations.map((citation) =>
+                    citation.source.kind === "simulated"
+                      ? citation.source.note
+                      : (citation.quote ?? ""),
+                  ),
+                ).size
+              }
+            </span>
+            <span
+              aria-hidden
+              className={`transition-transform duration-200 ${showSources ? "rotate-180" : ""}`}
+            >
+              &#8964;
+            </span>
+          </button>
         </div>
       </header>
 
+      <div className="flex min-h-0 flex-1">
       <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8">
-        <div className="mx-auto max-w-[46rem]">
+        <div className={`mx-auto max-w-[46rem] ${transcript.messages.length === 0 && !waiting ? "flex min-h-full flex-col justify-center" : ""}`}>
           {transcript.messages.length === 0 && !waiting ? (
             <div>
               <h3 className="text-base font-medium text-ink">
@@ -190,6 +214,15 @@ export function ConversationPanel({
             </>
           )}
           <div ref={endRef} />
+        </div>
+      </div>
+
+        <div
+          className={`shrink-0 overflow-hidden transition-[width] duration-[400ms] ease-[cubic-bezier(0.32,0.72,0,1)] ${showSources ? "w-[22rem]" : "w-0"}`}
+        >
+          <div className="h-full w-[22rem]">
+            <SourceSummary citations={transcript.citations} />
+          </div>
         </div>
       </div>
 

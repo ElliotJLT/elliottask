@@ -72,18 +72,17 @@ export function RespondentPanel({
           <div className="mt-3">
             <AttributePills persona={persona} />
           </div>
+          <div className="mt-6">
+            <ProvenanceNote name={firstName} />
+          </div>
         </div>
       </div>
 
       <div className="shrink-0 border-t border-border bg-card px-7 py-5">
-        <div className="flex justify-end">
-          <ProvenanceNote name={firstName} />
-        </div>
-
         {conversationId ? (
           <Link
             href={`/interviews/${conversationId}`}
-            className="group mt-4 flex items-center justify-between rounded-xl bg-accent px-5 py-3.5 font-medium text-white transition-colors duration-150 hover:bg-[#bd5637]"
+            className="group flex items-center justify-between rounded-xl bg-accent px-5 py-3.5 font-medium text-white transition-colors duration-150 hover:bg-[#bd5637]"
           >
             {hasTranscript
               ? `Open interview with ${firstName}`

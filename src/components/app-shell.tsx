@@ -48,19 +48,12 @@ export function AppShell({
 
   const glide = "duration-[600ms] ease-[cubic-bezier(0.32,0.72,0,1)]";
 
-  // The society holds the screen while browsing, shares it with a record, and
-  // steps back to a column once the interview is the work being done. Exactly
-  // one of the two columns grows in each mode; the other carries a fixed width.
-  const societyBox =
-    mode === "interview"
-      ? `w-0 shrink-0 overflow-hidden p-0 transition-[width] ${glide}`
-      : "min-w-0 flex-1 p-5";
-  const panelBox =
-    mode === "interview"
-      ? "min-w-0 flex-1"
-      : `shrink-0 overflow-hidden transition-[width] ${glide} ${
-          mode === "record" ? "w-[31rem]" : "w-0"
-        }`;
+  // Every column is flexible and capped, and the cap is what animates. Moving
+  // between modes then reads as one panel handing width to another rather than
+  // a cut between two layouts.
+  const societyCap = mode === "interview" ? "0px" : "200vw";
+  const panelCap =
+    mode === "browse" ? "0px" : mode === "record" ? "31rem" : "200vw";
 
   return (
     <div className="flex h-full">
@@ -90,7 +83,12 @@ export function AppShell({
       </div>
 
       <div className="flex min-w-0 flex-1">
-        <div className={societyBox}>
+        <div
+          style={{ maxWidth: societyCap }}
+          className={`min-w-0 flex-1 overflow-hidden transition-[max-width,opacity] ${glide} ${
+            mode === "interview" ? "p-0 opacity-0 duration-200" : "p-5 opacity-100"
+          }`}
+        >
           <SocietyPanel
             results={data.results}
             activeOptions={activeOptions}
@@ -105,7 +103,10 @@ export function AppShell({
           />
         </div>
 
-        <div className={panelBox}>
+        <div
+          style={{ maxWidth: panelCap }}
+          className={`min-w-0 flex-1 overflow-hidden transition-[max-width] ${glide}`}
+        >
           <div
             className={`h-full ${mode === "record" ? "w-[31rem]" : "w-full"}`}
           >
