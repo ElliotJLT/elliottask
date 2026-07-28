@@ -66,8 +66,17 @@ Dark mode is out of scope for this build.
 9. Defaults over configuration. Choose for the user wherever the system can make a better-informed choice, and make the override discoverable rather than the setup mandatory.
 10. Match interaction weight to intent. A quick follow-up should cost one tap; a durable artefact (a saved interview) can justify ceremony. Never make the light thing heavy.
 
+### Simulation and evidence
+
+11. Fluency is not evidence. A polished conversational answer reads as true whether or not it is; the interface must carry the credibility signal separately from the prose. Provenance markers, not confident tone, are what earn belief.
+12. The persona has boundaries and shows them. It can decline: outside its data, outside the survey, outside its profile. A system that visibly says "I can't speak to that" makes everything else it says worth more. No failure states means no credibility.
+13. Surface the method where the doubt occurs. The simulation has an underlying basis (observed data, a constructed profile, a validated model); the interface should expose that basis at the moment a user wonders "is this made up?", not on a separate page they'll never visit.
+14. This is an instrument, not a companion. No sycophancy, no rapport theatre, no pretending to type. Warmth comes from craft; credibility comes from behaving like a tool with legible limits.
+15. A conversation is chronological, which makes it bad at being a record. Give the thread spatial anchors: persistent context beside it, scannable structure within it, and a way back to anything that mattered without rereading.
+16. Not everything deserves to be a conversation. When the task is structured (compare, revisit, choose), give it structured UI beside the thread instead of forcing it through the composer.
+
 ### Craft
 
-11. Every state is designed: empty states teach the feature, loading states are honest about duration, long content overflows gracefully. An unstyled edge case is an unfinished feature.
-12. Confidence precedes use. Every control telegraphs what it will do before it's pressed: labels over icons alone, previews over surprises.
-13. Accessibility floor, not ceiling: 4.5:1 contrast for text, visible focus states, full keyboard path through the chat, semantic landmarks for the three panels.
+17. Every state is designed: empty states teach the feature, loading states are honest about duration, long content overflows gracefully. An unstyled edge case is an unfinished feature.
+18. Confidence precedes use. Every control telegraphs what it will do before it's pressed: labels over icons alone, previews over surprises.
+19. Accessibility floor, not ceiling: 4.5:1 contrast for text, visible focus states, full keyboard path through the chat, semantic landmarks for the three panels.

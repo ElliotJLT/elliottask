@@ -26,4 +26,5 @@ Rebuild of the persona chat for the Radiant platform. Clients run simulated surv
 ## Verify
 
 - Run the flow in the browser before calling anything done.
+- Before a screen ships, critique it against docs/design.md: heuristic pass (system status visible, consistency, recognition over recall) plus a generic-AI-pattern check (gradient text, purple-on-white, nested cards, uniform card grids). If it reads as template output, it isn't done.
 - `npm run build` and `npm run lint` pass before every commit.
