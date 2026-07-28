@@ -16,7 +16,7 @@ Six pills across the top edge, uniform in weight, giving no indication of whethe
 
 **2. Colour is the only meaningful channel in the graph; position and proximity are decorative.** *(Own audit)*
 Nodes are laid out in an even disc, so two adjacent dots share nothing beyond proximity in a layout that does not encode similarity. The product's value is that opinion forms through a network, and the one view of that network shows no clusters, no communities, no structure. Breaks 8: expose the structure the data already has.
-→ v2: out of scope for this build. Noted because the chat inherits this entry point, and the persona panel takes on some of the orientation work the graph is not doing.
+→ v2: the society is kept, because it is the one view that says this is a population rather than a spreadsheet, and given something to encode. Respondents are drawn toward the others who answered as they did, so communities are visible in the shape itself, and the result legend doubles as a filter that dims a community in place. Selecting a respondent from inside their community is what starts an interview.
 
 **3. The results panel has no boundary, and the graph bleeds underneath it.** *(Own audit)*
 Grey panel against white canvas with no border or elevation change to separate them, and translucent nodes visible behind the insight text. Body copy over a moving, multicoloured background is a legibility failure before it is an aesthetic one. Breaks 19 and the foundations rule that borders define surfaces before shadows do.

@@ -85,3 +85,16 @@ export interface Conversation {
   createdAt: string;
   updatedAt: string;
 }
+
+/**
+ * A finding written against the survey. The stat is stored apart from the prose
+ * so the interface can lead with the number instead of burying it in a
+ * paragraph.
+ */
+export interface Insight {
+  id: string;
+  surveyId: string;
+  stat: string | null;
+  headline: string;
+  detail: string;
+}

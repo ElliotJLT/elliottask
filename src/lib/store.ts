@@ -1,6 +1,7 @@
 import {
   citations,
   conversations,
+  insights,
   messages,
   personas,
   survey,
@@ -10,11 +11,16 @@ import {
 import type {
   Citation,
   Conversation,
+  Insight,
   Message,
   Persona,
   Survey,
   SurveyResponse,
 } from "./types";
+
+export function listInsights(): Insight[] {
+  return insights;
+}
 
 /**
  * Read layer over the mock data. Components go through these functions rather

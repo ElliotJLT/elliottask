@@ -1,0 +1,126 @@
+import { getResults, listPersonas, getResponse, getOptionIndex } from "./store";
+
+export interface GraphNode {
+  id: string;
+  x: number;
+  y: number;
+  option: string;
+  /** Set for respondents whose full profile is loaded and interviewable. */
+  personaId: string | null;
+}
+
+export interface GraphEdge {
+  a: number;
+  b: number;
+}
+
+export interface SocietyLayout {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+  size: number;
+}
+
+/** Deterministic PRNG so the society renders identically on server and client. */
+function mulberry32(seed: number) {
+  let state = seed;
+  return () => {
+    state |= 0;
+    state = (state + 0x6d2b79f5) | 0;
+    let t = Math.imul(state ^ (state >>> 15), 1 | state);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function gaussian(random: () => number): number {
+  const u = Math.max(random(), 1e-9);
+  const v = random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+
+const SIZE = 1000;
+const CENTRE = SIZE / 2;
+const RADIUS = SIZE * 0.46;
+const NODE_TOTAL = 620;
+
+/**
+ * Positions respondents as one society with communities inside it. Each option
+ * pulls its respondents toward a centre of gravity, and the spread is wide
+ * enough that the communities overlap rather than separating into islands, so
+ * proximity reads as shared opinion rather than as a hard boundary.
+ */
+export function buildSociety(): SocietyLayout {
+  const random = mulberry32(0x5eed_1234);
+  const results = getResults();
+  const nodes: GraphNode[] = [];
+
+  const claimed = new Map<string, string>();
+  for (const persona of listPersonas()) {
+    const response = getResponse(persona.id);
+    if (response) claimed.set(persona.id, response.choice);
+  }
+  const pending = [...claimed.entries()];
+
+  results.forEach((result) => {
+    const index = getOptionIndex(result.option);
+    const angle = (index / results.length) * Math.PI * 2 - Math.PI / 2;
+    const gravityX = CENTRE + Math.cos(angle) * RADIUS * 0.54;
+    const gravityY = CENTRE + Math.sin(angle) * RADIUS * 0.54;
+    const count = Math.max(12, Math.round(result.share * NODE_TOTAL));
+
+    for (let i = 0; i < count; i += 1) {
+      let x = 0;
+      let y = 0;
+      for (let attempt = 0; attempt < 24; attempt += 1) {
+        x = gravityX + gaussian(random) * RADIUS * 0.3;
+        y = gravityY + gaussian(random) * RADIUS * 0.3;
+        const dx = x - CENTRE;
+        const dy = y - CENTRE;
+        if (dx * dx + dy * dy <= RADIUS * RADIUS) break;
+      }
+      // Trigonometric results can differ in the last bit between the server
+      // runtime and the browser, so coordinates are quantised before render.
+      x = Math.round(x * 10) / 10;
+      y = Math.round(y * 10) / 10;
+
+      // Give the first node of each community a loaded profile where one is
+      // waiting, so interviewable respondents sit inside their own cluster.
+      let personaId: string | null = null;
+      const match = pending.findIndex(([, choice]) => choice === result.option);
+      if (i === Math.floor(count / 3) && match !== -1) {
+        personaId = pending[match][0];
+        pending.splice(match, 1);
+      } else if (i === Math.floor(count / 1.7) && match !== -1) {
+        personaId = pending[match][0];
+        pending.splice(match, 1);
+      }
+
+      nodes.push({
+        id: `nod_${result.option}_${i}`,
+        x,
+        y,
+        option: result.option,
+        personaId,
+      });
+    }
+  });
+
+  const edges: GraphEdge[] = [];
+  const threshold = SIZE * 0.075;
+  for (let i = 0; i < nodes.length && edges.length < 760; i += 1) {
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const j = Math.floor(random() * nodes.length);
+      if (j === i) continue;
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      if (Math.sqrt(dx * dx + dy * dy) < threshold) {
+        edges.push({ a: i, b: j });
+        break;
+      }
+    }
+  }
+
+  return { nodes, edges, size: SIZE };
+}
+
+export const society = buildSociety();
