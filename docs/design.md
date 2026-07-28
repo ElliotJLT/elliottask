@@ -80,3 +80,9 @@ Dark mode is out of scope for this build.
 17. Every state is designed: empty states teach the feature, loading states are honest about duration, long content overflows gracefully. An unstyled edge case is an unfinished feature.
 18. Confidence precedes use. Every control telegraphs what it will do before it's pressed: labels over icons alone, previews over surprises.
 19. Accessibility floor, not ceiling: 4.5:1 contrast for text, visible focus states, full keyboard path through the chat, semantic landmarks for the three panels.
+
+### Views of a population
+
+20. Foreground and background, not add and remove. Narrowing a view pushes the chosen subset forward and fades the rest rather than deleting it, so a user can always see how much of the whole they are looking at. A filter that empties the screen destroys the context that made the filter worth applying.
+21. A view where position means something is a map, not a picture. Each channel carries one variable and keeps it: position for community, colour for answer, size and glow for whether something can be acted on. A channel that carries nothing should not be varying.
+22. The terrain stays put between visits. The layout is generated from a fixed seed, so a respondent sits in the same place every time and users can build familiarity with the shape rather than re-reading it on every load.

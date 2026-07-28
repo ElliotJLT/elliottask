@@ -161,9 +161,10 @@ export function ExploreView({ data }: { data: ExploreData }) {
         <div className="pointer-events-none absolute top-7 left-8 z-10 max-w-sm">
           <p className="label">The society</p>
           <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-muted">
-            Each dot is one simulated respondent, drawn toward the others who
-            answered as they did. Ringed dots have a full profile loaded and can
-            be interviewed.
+            A sample of the society. Each dot is one respondent, tied to the
+            neighbours who shape their view and drawn toward the others who
+            answered as they did. The lit ones have a profile loaded to
+            interview.
           </p>
         </div>
 

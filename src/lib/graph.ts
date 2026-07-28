@@ -12,6 +12,8 @@ export interface GraphNode {
 export interface GraphEdge {
   a: number;
   b: number;
+  /** True when the edge touches a respondent with a loaded profile. */
+  local: boolean;
 }
 
 export interface SocietyLayout {
@@ -41,7 +43,9 @@ function gaussian(random: () => number): number {
 const SIZE = 1000;
 const CENTRE = SIZE / 2;
 const RADIUS = SIZE * 0.46;
-const NODE_TOTAL = 620;
+const NODE_TOTAL = 250;
+/** How many nearest neighbours each respondent is tied to. */
+const DEGREE = 2;
 
 /**
  * Positions respondents as one society with communities inside it. Each option
@@ -105,20 +109,33 @@ export function buildSociety(): SocietyLayout {
     }
   });
 
+  // Tie each respondent to their nearest neighbours so the connections trace
+  // the shape of the communities rather than scattering across the disc.
+  const seen = new Set<string>();
   const edges: GraphEdge[] = [];
-  const threshold = SIZE * 0.075;
-  for (let i = 0; i < nodes.length && edges.length < 760; i += 1) {
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      const j = Math.floor(random() * nodes.length);
-      if (j === i) continue;
-      const dx = nodes[i].x - nodes[j].x;
-      const dy = nodes[i].y - nodes[j].y;
-      if (Math.sqrt(dx * dx + dy * dy) < threshold) {
-        edges.push({ a: i, b: j });
-        break;
-      }
+
+  nodes.forEach((node, i) => {
+    const nearest = nodes
+      .map((other, j) => {
+        const dx = node.x - other.x;
+        const dy = node.y - other.y;
+        return { j, distance: dx * dx + dy * dy };
+      })
+      .filter((entry) => entry.j !== i)
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, DEGREE);
+
+    for (const { j } of nearest) {
+      const key = i < j ? `${i}:${j}` : `${j}:${i}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      edges.push({
+        a: i,
+        b: j,
+        local: node.personaId !== null || nodes[j].personaId !== null,
+      });
     }
-  }
+  });
 
   return { nodes, edges, size: SIZE };
 }
