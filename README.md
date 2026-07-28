@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Radiant — Persona Chat v2
 
-## Getting Started
+A rebuild of Radiant's persona chat: the interface clients use to interview AI personas after running a simulated survey. Built for the Artificial Societies product task.
 
-First, run the development server:
+The existing chat works, but clients don't trust it and don't know what it's for. Every feature in this build traces back to a specific piece of client feedback.
+
+## Client feedback → features
+
+| What clients said | The underlying problem | What this build does about it |
+|---|---|---|
+| "I don't know when or why I should use the chats" | The chat has no stated purpose. It opens cold, with an empty input box. | Frame chat as a research interview. The entry point explains what personas can tell you; suggested questions seed the first message from the persona's survey response. |
+| "I keep losing my chats after I log off" | No persistence. Conversations die with the session. | Conversations are saved and resumable. A history panel lists past interviews per persona and per survey. |
+| "I don't know any details about who I'm talking to" | Persona context lives in the graph tooltip, then disappears once the chat opens. | Persistent profile panel beside the chat: attributes, survey choice, and their verbatim comment stay in view for the whole conversation. |
+| "I don't trust the chat and their responses" | Nothing signals where an answer comes from. | Replies visibly separate what's grounded in the persona's data from what's simulated extrapolation. |
+| "How do I know if what they're saying is backed by real data or just made up?" | No provenance. Data-backed claims and invention look identical. | Inline citations on persona replies. Each cited claim links to its source: the survey response, a profile attribute, or a flagged simulation. |
+
+The last two concerns are the core product risk: a research tool nobody trusts doesn't get used. So provenance is treated as the headline feature here, not a footnote.
+
+## Running locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The chat is mocked per the brief; no API keys required.
