@@ -1,29 +1,99 @@
 "use client";
 
 import Link from "next/link";
-import { MessageThread } from "./message-thread";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { citationsFor, stageReply } from "@/lib/replies";
+import {
+  messageId,
+  readTranscript,
+  subscribe,
+  timestamp,
+  writeTranscript,
+  type Transcript,
+} from "@/lib/transcript-store";
+import type { Citation, Message, Persona, SurveyResponse } from "@/lib/types";
+import { MessageThread, ThinkingRow } from "./message-thread";
 import { OptionTag } from "./option-tag";
 import { PersonaMark } from "./persona-mark";
 import { ProvenanceNote } from "./provenance-note";
-import type { Message, Persona, SurveyResponse } from "@/lib/types";
 
 /**
- * The interview, once it has been unlocked. By this point the respondent has
- * been read and chosen, so the record shrinks to a header line and the
- * transcript takes the room.
+ * The interview. By this point the respondent has been read and chosen, so the
+ * conversation owns the screen and the map is one step back rather than
+ * occupying width it cannot use.
  */
 export function ConversationPanel({
+  conversationId,
   persona,
   response,
-  messages,
+  seedMessages,
+  seedCitations,
   openings,
 }: {
+  conversationId: string;
   persona: Persona;
   response: SurveyResponse | undefined;
-  messages: Message[];
+  seedMessages: Message[];
+  seedCitations: Citation[];
   openings: string[];
 }) {
   const firstName = persona.name.split(" ")[0];
+  const seed: Transcript = { messages: seedMessages, citations: seedCitations };
+  const transcript = useSyncExternalStore(
+    subscribe,
+    () => readTranscript(conversationId, seed),
+    () => seed,
+  );
+  const [draft, setDraft] = useState("");
+  const [waiting, setWaiting] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [transcript.messages.length, waiting]);
+
+  const ask = (question: string) => {
+    const trimmed = question.trim();
+    if (!trimmed || waiting || !response) return;
+
+    const userMessage: Message = {
+      id: messageId(),
+      conversationId,
+      author: "user",
+      content: trimmed,
+      createdAt: timestamp(),
+    };
+
+    const withQuestion: Transcript = {
+      messages: [...transcript.messages, userMessage],
+      citations: transcript.citations,
+    };
+    writeTranscript(conversationId, withQuestion);
+    setDraft("");
+    setWaiting(true);
+
+    window.setTimeout(() => {
+      const reply = stageReply(trimmed, persona, response);
+      const replyId = messageId("_r");
+      writeTranscript(conversationId, {
+        messages: [
+          ...withQuestion.messages,
+          {
+            id: replyId,
+            conversationId,
+            author: "persona",
+            content: reply.content,
+            createdAt: timestamp(),
+          },
+        ],
+        citations: [
+          ...withQuestion.citations,
+          ...citationsFor(replyId, reply),
+        ],
+      });
+      setWaiting(false);
+    }, 900);
+  };
 
   return (
     <section
@@ -31,7 +101,7 @@ export function ConversationPanel({
       className="flex h-full w-full min-w-0 flex-col bg-surface"
     >
       <header className="shrink-0 border-b border-border bg-card px-8 py-4">
-        <div className="flex items-center gap-4">
+        <div className="mx-auto flex max-w-[52rem] items-center gap-4">
           <Link
             href={`/respondents/${persona.id}`}
             className="group -ml-2 flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
@@ -66,38 +136,99 @@ export function ConversationPanel({
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8">
-        <div className="mx-auto max-w-[44rem]">
-          {messages.length > 0 ? (
-            <MessageThread
-              messages={messages}
-              personaName={persona.name}
-              choice={response?.choice ?? ""}
-            />
-          ) : (
+        <div className="mx-auto max-w-[46rem]">
+          {transcript.messages.length === 0 && !waiting ? (
             <div>
               <h3 className="text-base font-medium text-ink">
                 Start with what you want to understand
               </h3>
               <p className="mt-2 max-w-prose text-[0.9375rem] leading-relaxed text-ink-muted">
-                {firstName} can speak to the answer given in this survey and the
-                profile behind it. Questions past that are answered as
-                extrapolation, and labelled.
+                {firstName} answers from the survey response and the profile
+                behind it. Every claim is marked with where it came from, and
+                anything past that data is marked as extrapolation.
               </p>
 
               <p className="label mt-8">Openings from this answer</p>
               <ul className="mt-3 flex flex-col gap-2">
                 {openings.map((opening) => (
-                  <li
-                    key={opening}
-                    className="rounded-lg border border-border bg-card px-4 py-3.5 text-[0.9375rem] leading-relaxed text-ink"
-                  >
-                    {opening}
+                  <li key={opening}>
+                    <button
+                      type="button"
+                      onClick={() => ask(opening)}
+                      className="group flex w-full items-center justify-between gap-4 rounded-lg border border-border bg-card px-4 py-3.5 text-left text-[0.9375rem] leading-relaxed text-ink transition-colors duration-150 hover:border-border-strong"
+                    >
+                      {opening}
+                      <span
+                        aria-hidden
+                        className="shrink-0 text-ink-muted transition-transform duration-150 group-hover:translate-x-0.5"
+                      >
+                        &rarr;
+                      </span>
+                    </button>
                   </li>
                 ))}
               </ul>
             </div>
+          ) : (
+            <>
+              <MessageThread
+                messages={transcript.messages}
+                citations={transcript.citations}
+                personaName={persona.name}
+                personaId={persona.id}
+                choice={response?.choice ?? ""}
+              />
+              {waiting ? (
+                <ol className="mt-7">
+                  <ThinkingRow
+                    personaName={persona.name}
+                    personaId={persona.id}
+                    choice={response?.choice ?? ""}
+                  />
+                </ol>
+              ) : null}
+            </>
           )}
+          <div ref={endRef} />
         </div>
+      </div>
+
+      <div className="shrink-0 border-t border-border bg-card px-8 py-5">
+        <form
+          className="mx-auto max-w-[46rem]"
+          onSubmit={(event) => {
+            event.preventDefault();
+            ask(draft);
+          }}
+        >
+          <div className="flex items-end gap-3 rounded-xl border border-border bg-surface px-4 py-3 focus-within:border-border-strong">
+            <textarea
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.shiftKey) {
+                  event.preventDefault();
+                  ask(draft);
+                }
+              }}
+              rows={1}
+              placeholder={`Ask ${firstName} about their answer`}
+              aria-label={`Ask ${firstName} a question`}
+              className="max-h-32 min-h-[1.5rem] flex-1 resize-none bg-transparent text-[0.9375rem] leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={!draft.trim() || waiting}
+              className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-[#bd5637] disabled:cursor-not-allowed disabled:bg-border-strong"
+            >
+              Ask
+            </button>
+          </div>
+          <p className="mt-2.5 text-[0.75rem] text-ink-muted">
+            {firstName} is a simulated respondent. Claims are marked as grounded
+            in their data or as the model reasoning past it.
+          </p>
+        </form>
       </div>
     </section>
   );

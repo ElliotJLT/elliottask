@@ -35,3 +35,17 @@ v1 opens the chat with a line saying all views are fictional. That concedes the 
 ## The context column gives way
 
 Survey results, the filter and the insight list are browsing tools. During an interview they compete for width with the two things that matter: the respondent and the conversation. The column steps aside rather than staying for the sake of consistency, and the colour key it was holding moves onto the map where a legend belongs.
+
+## Citations in the flow, not behind a hover
+
+Every persona claim carries a marker, and the sources sit under the reply rather than in a tooltip. Evidence hidden behind an interaction is evidence most people never see, and the point is for a client to weigh a claim at the moment they read it.
+
+Grounded and simulated are separated by shape as well as colour: solid markers for claims traced to the survey response or the profile, dashed for the model reasoning past both. Colour alone would fail anyone who cannot separate the two hues, and this distinction is the one the entire feature rests on.
+
+## The respondent is allowed to refuse
+
+Ask about people who were not surveyed and the persona declines, says plainly that it would be guessing, and suggests running the question across the population instead. A system with no visible failure states gives no signal worth trusting, so refusal is built as a feature rather than treated as a gap. It is also the honest commercial answer: the right response to a question one respondent cannot answer is another survey.
+
+## Transcripts survive a reload
+
+"I keep losing my chats after I log off" is answered by actually persisting them, not by showing a saved-interviews list that forgets. Transcripts are written to browser storage and read back through React's external-store API, so a saved interview is still there after a refresh.

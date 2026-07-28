@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { ConversationPanel } from "@/components/conversation-panel";
 import { suggestedOpenings } from "@/lib/openings";
 import {
+  getCitations,
   getConversation,
   getMessages,
   getPersona,
@@ -22,12 +23,15 @@ export default async function InterviewPage({
   if (!persona) notFound();
 
   const response = getResponse(persona.id);
+  const messages = getMessages(conversation.id);
 
   return (
     <ConversationPanel
+      conversationId={conversation.id}
       persona={persona}
       response={response}
-      messages={getMessages(conversation.id)}
+      seedMessages={messages}
+      seedCitations={messages.flatMap((message) => getCitations(message.id))}
       openings={response ? suggestedOpenings(response) : []}
     />
   );

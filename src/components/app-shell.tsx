@@ -53,8 +53,8 @@ export function AppShell({
   // one of the two columns grows in each mode; the other carries a fixed width.
   const societyBox =
     mode === "interview"
-      ? `w-[24rem] shrink-0 transition-[width] ${glide}`
-      : "min-w-0 flex-1";
+      ? `w-0 shrink-0 overflow-hidden p-0 transition-[width] ${glide}`
+      : "min-w-0 flex-1 p-5";
   const panelBox =
     mode === "interview"
       ? "min-w-0 flex-1"
@@ -90,13 +90,13 @@ export function AppShell({
       </div>
 
       <div className="flex min-w-0 flex-1">
-        <div className={`p-5 ${societyBox}`}>
+        <div className={societyBox}>
           <SocietyPanel
             results={data.results}
             activeOptions={activeOptions}
             focusPersonaId={focus?.persona.id ?? null}
             focusName={focus?.persona.name.split(" ")[0] ?? null}
-            compact={mode === "interview"}
+            compact={false}
             interviewableCount={
               data.respondents.filter((entry) => entry.conversationId).length
             }

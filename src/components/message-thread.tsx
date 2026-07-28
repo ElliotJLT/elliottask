@@ -1,10 +1,7 @@
 import { formatTime } from "@/lib/format";
-import type { Message } from "@/lib/types";
+import type { Citation, Message } from "@/lib/types";
+import { CitedText, SourceList } from "./citations";
 import { PersonaMark } from "./persona-mark";
-
-function paragraphs(content: string): string[] {
-  return content.split("\n\n").filter((part) => part.trim().length > 0);
-}
 
 function UserMessage({ message }: { message: Message }) {
   return (
@@ -23,17 +20,26 @@ function UserMessage({ message }: { message: Message }) {
 
 function PersonaMessage({
   message,
+  citations,
   personaName,
+  personaId,
   choice,
 }: {
   message: Message;
+  citations: Citation[];
   personaName: string;
+  personaId: string;
   choice: string;
 }) {
   return (
     <li>
       <div className="flex items-center gap-2.5">
-        <PersonaMark name={personaName} choice={choice} size="sm" />
+        <PersonaMark
+          name={personaName}
+          choice={choice}
+          personaId={personaId}
+          size="sm"
+        />
         <span className="text-[0.8125rem] font-medium text-ink">
           {personaName}
         </span>
@@ -42,14 +48,49 @@ function PersonaMessage({
         </span>
       </div>
       <div className="mt-2 ml-[2.625rem] rounded-xl rounded-tl-sm border border-border bg-card px-5 py-4">
-        {paragraphs(message.content).map((paragraph, index) => (
-          <p
-            key={index}
-            className="text-[0.9375rem] leading-relaxed text-ink not-first:mt-4"
-          >
-            {paragraph}
-          </p>
-        ))}
+        <CitedText content={message.content} citations={citations} />
+        <SourceList citations={citations} />
+      </div>
+    </li>
+  );
+}
+
+/** The staged pause before a reply, described honestly rather than dressed up. */
+export function ThinkingRow({
+  personaName,
+  personaId,
+  choice,
+}: {
+  personaName: string;
+  personaId: string;
+  choice: string;
+}) {
+  return (
+    <li>
+      <div className="flex items-center gap-2.5">
+        <PersonaMark
+          name={personaName}
+          choice={choice}
+          personaId={personaId}
+          size="sm"
+        />
+        <span className="text-[0.8125rem] font-medium text-ink">
+          {personaName}
+        </span>
+      </div>
+      <div className="mt-2 ml-[2.625rem] flex items-center gap-2 rounded-xl rounded-tl-sm border border-border bg-card px-5 py-4">
+        <span className="flex gap-1" aria-hidden>
+          {[0, 1, 2].map((i) => (
+            <span
+              key={i}
+              className="size-1.5 animate-pulse rounded-full bg-ink-muted"
+              style={{ animationDelay: `${i * 160}ms` }}
+            />
+          ))}
+        </span>
+        <span className="text-[0.875rem] text-ink-muted">
+          Checking the survey response and profile
+        </span>
       </div>
     </li>
   );
@@ -57,11 +98,15 @@ function PersonaMessage({
 
 export function MessageThread({
   messages,
+  citations,
   personaName,
+  personaId,
   choice,
 }: {
   messages: Message[];
+  citations: Citation[];
   personaName: string;
+  personaId: string;
   choice: string;
 }) {
   return (
@@ -73,7 +118,9 @@ export function MessageThread({
           <PersonaMessage
             key={message.id}
             message={message}
+            citations={citations.filter((c) => c.messageId === message.id)}
             personaName={personaName}
+            personaId={personaId}
             choice={choice}
           />
         ),
