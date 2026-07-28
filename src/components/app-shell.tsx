@@ -1,10 +1,9 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import type { ShellData } from "@/lib/shell-data";
 import { ContextRail } from "./context-rail";
-import { PersonaCard } from "./persona-card";
 import { SocietyStage } from "./society-stage";
 
 /**
@@ -21,12 +20,8 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [muted, setMuted] = useState<string[]>([]);
-  const [picked, setPicked] = useState<{
-    personaId: string;
-    x: number;
-    y: number;
-  } | null>(null);
 
   const conversationId = pathname.startsWith("/interviews/")
     ? pathname.split("/")[2]
@@ -36,34 +31,49 @@ export function AppShell({
     ? data.respondents.find((entry) => entry.conversationId === conversationId)
     : undefined;
 
-  // The floating card belongs to discovery. While an interview is open the
-  // conversation panel describes the respondent instead, and the pick is kept
-  // so closing the interview returns you to where you were on the map.
   const inConversation = Boolean(openInterview);
 
   const activeOptions = data.results
     .map((result) => result.option)
     .filter((option) => !muted.includes(option));
 
-  const chosen = picked
-    ? data.respondents.find((entry) => entry.persona.id === picked.personaId)
-    : undefined;
+  // Selecting a respondent opens their interview directly. A preview card in
+  // between would show the same fields the panel already carries.
+  const open = (personaId: string) => {
+    const target = data.respondents.find(
+      (entry) => entry.persona.id === personaId,
+    );
+    if (target?.conversationId) router.push(`/interviews/${target.conversationId}`);
+  };
+
+  const glide = "duration-[600ms] ease-[cubic-bezier(0.32,0.72,0,1)]";
 
   return (
     <div className="flex h-full">
-      <ContextRail
-        data={data}
-        muted={muted}
-        onToggleOption={(option) =>
-          setMuted((current) =>
-            current.includes(option)
-              ? current.filter((entry) => entry !== option)
-              : [...current, option],
-          )
-        }
-        onShowAll={() => setMuted([])}
-        activeConversationId={conversationId}
-      />
+      {/* The context column is discovery furniture. It gives up its width to
+          the conversation rather than competing with it. */}
+      <div
+        aria-hidden={inConversation}
+        className={`shrink-0 overflow-hidden transition-[width] ${glide} ${
+          inConversation ? "w-0" : "w-[20rem]"
+        }`}
+      >
+        <div className="h-full w-[20rem]">
+          <ContextRail
+            data={data}
+            muted={muted}
+            onToggleOption={(option) =>
+              setMuted((current) =>
+                current.includes(option)
+                  ? current.filter((entry) => entry !== option)
+                  : [...current, option],
+              )
+            }
+            onShowAll={() => setMuted([])}
+            activeConversationId={conversationId}
+          />
+        </div>
+      </div>
 
       <div className="flex min-w-0 flex-1">
         <div className="relative flex min-w-0 flex-1 items-center justify-center bg-card">
@@ -71,8 +81,8 @@ export function AppShell({
             <p className="label">The society</p>
             <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-muted">
               {inConversation
-                ? `${openInterview?.persona.name.split(" ")[0]} and the respondents whose views shape theirs. The rest of the society is still here, behind them.`
-                : "A sample of the society. Each dot is one respondent, tied to the neighbours who shape their view and drawn toward the others who answered as they did. The lit ones have a profile loaded to interview."}
+                ? `${openInterview?.persona.name.split(" ")[0]} and the respondents whose views shape theirs. The rest of the society is still here, behind them. Pick another lit respondent to switch.`
+                : "A sample of the society. Each dot is one respondent, tied to the neighbours who shape their view and drawn toward the others who answered as they did. Select a lit one to interview them."}
             </p>
           </div>
 
@@ -80,38 +90,19 @@ export function AppShell({
             <SocietyStage
               activeOptions={activeOptions}
               focusPersonaId={openInterview?.persona.id ?? null}
-              selectedPersonaId={
-                openInterview?.persona.id ?? picked?.personaId ?? null
-              }
-              onSelect={(personaId, point) =>
-                setPicked({ personaId, x: point.x, y: point.y })
-              }
+              selectedPersonaId={openInterview?.persona.id ?? null}
+              onSelect={open}
             />
-
-            {chosen && picked && !inConversation ? (
-              <div
-                className="absolute z-20"
-                style={{
-                  left: `${picked.x * 100}%`,
-                  top: `${picked.y * 100}%`,
-                  transform: `translate(${picked.x > 0.5 ? "calc(-100% - 1.25rem)" : "1.25rem"}, ${
-                    picked.y > 0.5 ? "calc(-100% - 0.5rem)" : "-0.5rem"
-                  })`,
-                }}
-              >
-                <PersonaCard
-                  persona={chosen.persona}
-                  response={chosen.response}
-                  conversationId={chosen.conversationId}
-                  hasTranscript={chosen.hasTranscript}
-                  onDismiss={() => setPicked(null)}
-                />
-              </div>
-            ) : null}
           </div>
         </div>
 
-        {children}
+        <div
+          className={`shrink-0 overflow-hidden transition-[width] ${glide} ${
+            inConversation ? "w-[31rem]" : "w-0"
+          }`}
+        >
+          <div className="h-full w-[31rem]">{children}</div>
+        </div>
       </div>
     </div>
   );

@@ -23,7 +23,7 @@ export function ConversationPanel({
   messages: Message[];
   openings: string[];
 }) {
-  const [showRecord, setShowRecord] = useState(messages.length === 0);
+  const [showRecord, setShowRecord] = useState(true);
 
   const attributes: Array<[string, string]> = [
     ["Location", persona.location],
@@ -36,7 +36,7 @@ export function ConversationPanel({
   return (
     <section
       aria-label={`Interview with ${persona.name}`}
-      className="flex w-[31rem] shrink-0 flex-col border-l border-border bg-surface"
+      className="flex h-full w-full flex-col border-l border-border bg-surface"
     >
       <header className="shrink-0 border-b border-border bg-card px-6 py-5">
         <div className="flex items-start gap-3">
@@ -51,10 +51,15 @@ export function ConversationPanel({
           </div>
           <Link
             href="/"
-            aria-label="Close interview"
-            className="-mt-1 -mr-2 rounded-md px-2 py-1 text-lg leading-none text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
+            className="group -mt-0.5 -mr-2 flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
           >
-            &times;
+            <span
+              aria-hidden
+              className="transition-transform duration-150 group-hover:-translate-x-0.5"
+            >
+              &larr;
+            </span>
+            Society
           </Link>
         </div>
 
@@ -86,8 +91,12 @@ export function ConversationPanel({
         </div>
       </header>
 
+      {/* Record and transcript share one scroll region, so the record is never
+          clipped mid-sentence and folding it away simply gives the transcript
+          the height back. */}
+      <div className="min-h-0 flex-1 overflow-y-auto">
       {showRecord ? (
-        <div className="max-h-[46%] shrink-0 overflow-y-auto border-b border-border bg-surface-sunk px-6 py-5">
+        <div className="border-b border-border bg-surface-sunk px-6 py-5">
           {response ? (
             <>
               <p className="label">Their words in the survey</p>
@@ -122,7 +131,7 @@ export function ConversationPanel({
         </div>
       ) : null}
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+      <div className="px-6 py-6">
         {messages.length > 0 ? (
           <MessageThread
             messages={messages}
@@ -153,6 +162,7 @@ export function ConversationPanel({
             </ul>
           </div>
         )}
+      </div>
       </div>
     </section>
   );

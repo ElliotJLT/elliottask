@@ -29,7 +29,7 @@ export function SocietyStage({
   activeOptions: string[];
   focusPersonaId: string | null;
   selectedPersonaId: string | null;
-  onSelect: (personaId: string, point: { x: number; y: number }) => void;
+  onSelect: (personaId: string) => void;
 }) {
   const { nodes, edges, size } = society;
 
@@ -148,13 +148,7 @@ export function SocietyStage({
                 strokeWidth={4}
                 opacity={lit ? (inFocus(index) ? 1 : 0.3) : 0.12}
                 className="cursor-pointer transition-all duration-500"
-                onClick={() =>
-                  lit &&
-                  onSelect(node.personaId as string, {
-                    x: node.x / size,
-                    y: node.y / size,
-                  })
-                }
+                onClick={() => lit && onSelect(node.personaId as string)}
               />
             );
           })}
