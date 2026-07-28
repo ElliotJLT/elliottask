@@ -2,9 +2,10 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { society } from "@/lib/graph";
 import type { ShellData } from "@/lib/shell-data";
 import { ContextRail } from "./context-rail";
-import { SocietyStage } from "./society-stage";
+import { SocietyPanel } from "./society-panel";
 
 /**
  * One place, two modes. Discovery gives the society the room; an open
@@ -32,6 +33,7 @@ export function AppShell({
     : undefined;
 
   const inConversation = Boolean(openInterview);
+  const populationCount = society.nodes.length;
 
   const activeOptions = data.results
     .map((result) => result.option)
@@ -76,24 +78,18 @@ export function AppShell({
       </div>
 
       <div className="flex min-w-0 flex-1">
-        <div className="relative flex min-w-0 flex-1 items-center justify-center bg-card">
-          <div className="pointer-events-none absolute top-7 left-8 z-10 max-w-sm">
-            <p className="label">The society</p>
-            <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-muted">
-              {inConversation
-                ? `${openInterview?.persona.name.split(" ")[0]} and the respondents whose views shape theirs. The rest of the society is still here, behind them. Pick another lit respondent to switch.`
-                : "A sample of the society. Each dot is one respondent, tied to the neighbours who shape their view and drawn toward the others who answered as they did. Select a lit one to interview them."}
-            </p>
-          </div>
-
-          <div className="relative aspect-square h-full max-h-full w-full max-w-full">
-            <SocietyStage
-              activeOptions={activeOptions}
-              focusPersonaId={openInterview?.persona.id ?? null}
-              selectedPersonaId={openInterview?.persona.id ?? null}
-              onSelect={open}
-            />
-          </div>
+        <div className="min-w-0 flex-1 p-5">
+          <SocietyPanel
+            results={data.results}
+            activeOptions={activeOptions}
+            focusPersonaId={openInterview?.persona.id ?? null}
+            focusName={openInterview?.persona.name.split(" ")[0] ?? null}
+            interviewableCount={
+              data.respondents.filter((entry) => entry.conversationId).length
+            }
+            populationCount={populationCount}
+            onSelect={open}
+          />
         </div>
 
         <div

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { MessageThread } from "./message-thread";
 import { OptionTag } from "./option-tag";
@@ -49,18 +48,6 @@ export function ConversationPanel({
               {persona.role}, {persona.company}
             </p>
           </div>
-          <Link
-            href="/"
-            className="group -mt-0.5 -mr-2 flex shrink-0 items-center gap-1.5 rounded-md px-2 py-1 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
-          >
-            <span
-              aria-hidden
-              className="transition-transform duration-150 group-hover:-translate-x-0.5"
-            >
-              &larr;
-            </span>
-            Society
-          </Link>
         </div>
 
         <div className="mt-4 flex items-center justify-between gap-3">
