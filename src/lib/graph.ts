@@ -141,3 +141,32 @@ export function buildSociety(): SocietyLayout {
 }
 
 export const society = buildSociety();
+
+export function nodeIndexForPersona(personaId: string): number {
+  return society.nodes.findIndex((node) => node.personaId === personaId);
+}
+
+/**
+ * The respondent and the people whose views reach them: direct ties, plus the
+ * ties of those ties. Two hops is enough to read as a community rather than a
+ * handful of dots.
+ */
+export function neighbourhood(index: number, hops = 2): Set<number> {
+  const members = new Set<number>();
+  if (index < 0) return members;
+
+  let frontier = new Set<number>([index]);
+  members.add(index);
+
+  for (let hop = 0; hop < hops; hop += 1) {
+    const next = new Set<number>();
+    for (const edge of society.edges) {
+      if (frontier.has(edge.a) && !members.has(edge.b)) next.add(edge.b);
+      if (frontier.has(edge.b) && !members.has(edge.a)) next.add(edge.a);
+    }
+    for (const member of next) members.add(member);
+    frontier = next;
+  }
+
+  return members;
+}
