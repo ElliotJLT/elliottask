@@ -18,7 +18,8 @@ Rebuild of the persona chat for the Radiant platform. Clients run simulated surv
 
 ## Design
 
-- Match Radiant's existing language: warm neutrals, clean cards, italic serif for verbatim persona quotes, purple/orange/gold data accents. Exact tokens go in `globals.css` once pinned from reference designs.
+- The system lives in `docs/design.md`; tokens in `globals.css`. Both are binding: no colours, spacing, or motion outside them.
+- Match Radiant's existing language: warm neutrals, clean cards, italic serif reserved for verbatim persona quotes, saturated accents reserved for data and actions.
 - Never default to generic AI aesthetics: no Inter-on-white sameness, no purple gradients, no cookie-cutter card grids. Micro-interactions only where they earn their place.
 - Design every state: empty, loading, and long-content overflow.
 
