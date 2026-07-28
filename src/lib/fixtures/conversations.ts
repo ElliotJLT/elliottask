@@ -23,6 +23,40 @@ export const conversations: Conversation[] = [
     createdAt: "2026-07-23T15:40:00Z",
     updatedAt: "2026-07-23T15:44:00Z",
   },
+  // Respondents with no interview yet. Every persona has a conversation record
+  // so the interview surface has somewhere to open, started or not.
+  {
+    id: "con_sharma",
+    personaId: "per_sharma",
+    surveyId: "sur_seasons",
+    title: "Untitled interview",
+    createdAt: "2026-07-21T09:20:00Z",
+    updatedAt: "2026-07-21T09:20:00Z",
+  },
+  {
+    id: "con_osei",
+    personaId: "per_osei",
+    surveyId: "sur_seasons",
+    title: "Untitled interview",
+    createdAt: "2026-07-21T09:20:00Z",
+    updatedAt: "2026-07-21T09:20:00Z",
+  },
+  {
+    id: "con_lindqvist",
+    personaId: "per_lindqvist",
+    surveyId: "sur_seasons",
+    title: "Untitled interview",
+    createdAt: "2026-07-21T09:20:00Z",
+    updatedAt: "2026-07-21T09:20:00Z",
+  },
+  {
+    id: "con_moreau",
+    personaId: "per_moreau",
+    surveyId: "sur_seasons",
+    title: "Untitled interview",
+    createdAt: "2026-07-21T09:20:00Z",
+    updatedAt: "2026-07-21T09:20:00Z",
+  },
 ];
 
 export const messages: Message[] = [

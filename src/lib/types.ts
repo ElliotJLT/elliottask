@@ -16,6 +16,17 @@ export interface Survey {
   createdAt: string;
 }
 
+/**
+ * Materialised aggregate per option. Counts are the stored truth; shares are
+ * derived at read time so the two can never drift apart.
+ */
+export interface SurveyResult {
+  id: string;
+  surveyId: string;
+  option: string;
+  count: number;
+}
+
 export interface Persona {
   id: string;
   name: string;

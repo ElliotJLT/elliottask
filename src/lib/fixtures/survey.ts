@@ -1,4 +1,4 @@
-import type { Survey, SurveyResponse } from "../types";
+import type { Survey, SurveyResponse, SurveyResult } from "../types";
 
 export const survey: Survey = {
   id: "sur_seasons",
@@ -8,6 +8,13 @@ export const survey: Survey = {
   respondentCount: 1000,
   createdAt: "2026-07-21T09:14:00Z",
 };
+
+export const surveyResults: SurveyResult[] = [
+  { id: "srs_spring", surveyId: "sur_seasons", option: "Spring", count: 250 },
+  { id: "srs_summer", surveyId: "sur_seasons", option: "Summer", count: 250 },
+  { id: "srs_autumn", surveyId: "sur_seasons", option: "Autumn", count: 396 },
+  { id: "srs_winter", surveyId: "sur_seasons", option: "Winter", count: 104 },
+];
 
 export const surveyResponses: SurveyResponse[] = [
   {
