@@ -8,10 +8,10 @@ import { ContextRail } from "./context-rail";
 import { SocietyPanel } from "./society-panel";
 
 /**
- * One place, two modes. Discovery gives the society the room; an open
- * interview narrows it to the respondent's neighbourhood and hands the rest of
- * the width to the conversation. The society never unmounts, so moving between
- * the two reads as a change of focus rather than a change of place.
+ * Three steps, in the order the work actually happens. Browse the society,
+ * read a respondent, then interview them. Each step gives width to the one
+ * after it, and the society stays mounted throughout so none of it reads as
+ * leaving the page.
  */
 export function AppShell({
   data,
@@ -24,40 +24,50 @@ export function AppShell({
   const router = useRouter();
   const [muted, setMuted] = useState<string[]>([]);
 
-  const conversationId = pathname.startsWith("/interviews/")
-    ? pathname.split("/")[2]
-    : null;
+  const segments = pathname.split("/").filter(Boolean);
+  const mode: "browse" | "record" | "interview" =
+    segments[0] === "interviews"
+      ? "interview"
+      : segments[0] === "respondents"
+        ? "record"
+        : "browse";
 
-  const openInterview = conversationId
-    ? data.respondents.find((entry) => entry.conversationId === conversationId)
-    : undefined;
-
-  const inConversation = Boolean(openInterview);
-  const populationCount = society.nodes.length;
+  const focus =
+    mode === "record"
+      ? data.respondents.find((entry) => entry.persona.id === segments[1])
+      : mode === "interview"
+        ? data.respondents.find((entry) => entry.conversationId === segments[1])
+        : undefined;
 
   const activeOptions = data.results
     .map((result) => result.option)
     .filter((option) => !muted.includes(option));
 
-  // Selecting a respondent opens their interview directly. A preview card in
-  // between would show the same fields the panel already carries.
-  const open = (personaId: string) => {
-    const target = data.respondents.find(
-      (entry) => entry.persona.id === personaId,
-    );
-    if (target?.conversationId) router.push(`/interviews/${target.conversationId}`);
-  };
+  const openRecord = (personaId: string) =>
+    router.push(`/respondents/${personaId}`);
 
   const glide = "duration-[600ms] ease-[cubic-bezier(0.32,0.72,0,1)]";
 
+  // The society holds the screen while browsing, shares it with a record, and
+  // steps back to a column once the interview is the work being done. Exactly
+  // one of the two columns grows in each mode; the other carries a fixed width.
+  const societyBox =
+    mode === "interview"
+      ? `w-[24rem] shrink-0 transition-[width] ${glide}`
+      : "min-w-0 flex-1";
+  const panelBox =
+    mode === "interview"
+      ? "min-w-0 flex-1"
+      : `shrink-0 overflow-hidden transition-[width] ${glide} ${
+          mode === "record" ? "w-[31rem]" : "w-0"
+        }`;
+
   return (
     <div className="flex h-full">
-      {/* The context column is discovery furniture. It gives up its width to
-          the conversation rather than competing with it. */}
       <div
-        aria-hidden={inConversation}
+        aria-hidden={mode !== "browse"}
         className={`shrink-0 overflow-hidden transition-[width] ${glide} ${
-          inConversation ? "w-0" : "w-[20rem]"
+          mode === "browse" ? "w-[20rem]" : "w-0"
         }`}
       >
         <div className="h-full w-[20rem]">
@@ -72,32 +82,35 @@ export function AppShell({
               )
             }
             onShowAll={() => setMuted([])}
-            activeConversationId={conversationId}
+            activeConversationId={
+              mode === "interview" ? (segments[1] ?? null) : null
+            }
           />
         </div>
       </div>
 
       <div className="flex min-w-0 flex-1">
-        <div className="min-w-0 flex-1 p-5">
+        <div className={`p-5 ${societyBox}`}>
           <SocietyPanel
             results={data.results}
             activeOptions={activeOptions}
-            focusPersonaId={openInterview?.persona.id ?? null}
-            focusName={openInterview?.persona.name.split(" ")[0] ?? null}
+            focusPersonaId={focus?.persona.id ?? null}
+            focusName={focus?.persona.name.split(" ")[0] ?? null}
+            compact={mode === "interview"}
             interviewableCount={
               data.respondents.filter((entry) => entry.conversationId).length
             }
-            populationCount={populationCount}
-            onSelect={open}
+            populationCount={society.nodes.length}
+            onSelect={openRecord}
           />
         </div>
 
-        <div
-          className={`shrink-0 overflow-hidden transition-[width] ${glide} ${
-            inConversation ? "w-[31rem]" : "w-0"
-          }`}
-        >
-          <div className="h-full w-[31rem]">{children}</div>
+        <div className={panelBox}>
+          <div
+            className={`h-full ${mode === "record" ? "w-[31rem]" : "w-full"}`}
+          >
+            {children}
+          </div>
         </div>
       </div>
     </div>

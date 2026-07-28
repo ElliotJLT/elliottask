@@ -25,11 +25,14 @@ export function SocietyStage({
   focusPersonaId,
   selectedPersonaId,
   onSelect,
+  fill = false,
 }: {
   activeOptions: string[];
   focusPersonaId: string | null;
   selectedPersonaId: string | null;
   onSelect: (personaId: string) => void;
+  /** Fill the box by cropping, for the narrow column beside an interview. */
+  fill?: boolean;
 }) {
   const { nodes, edges, size } = society;
 
@@ -55,6 +58,7 @@ export function SocietyStage({
   return (
     <svg
       viewBox={`0 0 ${size} ${size}`}
+      preserveAspectRatio={fill ? "xMidYMid slice" : "xMidYMid meet"}
       className="h-full w-full"
       role="img"
       aria-label="Society of simulated respondents, grouped by the season each one chose"

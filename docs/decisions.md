@@ -1,0 +1,37 @@
+# Decisions
+
+The calls that shaped this build, and why. Each one had a plausible alternative, so the reasoning matters more than the outcome.
+
+## Keep the society, and make it carry meaning
+
+The obvious move on a brief about chat is to build the chat and treat the survey view as an entry point. I kept the population graph as the centre of the experience instead. It is the one view that says this is a society rather than a spreadsheet, and dropping it would have produced a competent research dashboard with no relationship to the product it belongs to.
+
+The condition I put on keeping it: in v1 the disc is decorative, with position and proximity encoding nothing. So respondents are now drawn toward the others who answered as they did, and tied to their nearest neighbours. Mute an option and that community dims in place. The shape of the picture is now a finding.
+
+## Overview first, then detail: browse before chat
+
+The chat is the most valuable thing in the product, which makes it tempting to put it in front of the user immediately. That is the wrong order. Interviewing one respondent is drilling into a population you have not looked at yet, so it has to come second.
+
+This follows Shneiderman's visual information-seeking mantra: **overview first, zoom and filter, then details on demand** (*The Eyes Have It*, 1996). The society is the overview, the result legend is the filter, the respondent record is the detail, and the interview is the deepest level. Presenting all of it at once is not generosity, it is cost: information foraging theory (Pirolli and Card at Xerox PARC) describes people sampling cheaply for scent before committing effort to a patch, and Hick's law says a wall of simultaneous choice slows the decision rather than helping it.
+
+So the flow is three deliberate steps. Browse the society. Select a respondent and read their record. Then unlock the interview, which takes over the screen because by that point it deserves to.
+
+## No preview card between the map and the record
+
+The first version put a card on the map when you selected a respondent, carrying their name, role, answer, quote and attributes. The record panel then showed the same fields again. That is two clicks to do a one-click job and two components maintaining one set of content. Selecting a respondent now opens their record directly.
+
+## Fade, never remove
+
+Filtering an option dims that community where it sits rather than deleting it, and opening a respondent recedes the rest of the society rather than clearing it. A filter that empties the screen destroys the context that made the filter worth applying. The same rule drives the interview view: you always see how much of the population you are not looking at.
+
+## Constructed identity, not a photograph
+
+v1 shows a photoreal portrait of a named public figure beside a first-person quote. Every signal there says *this is what he said*, when the truthful claim is *this is what the model predicts someone like him would say*. Respondents carry a generated mark instead. It is the difference between a record and a simulation, and the interface should not blur it.
+
+## Provenance is the product, not a disclaimer
+
+v1 opens the chat with a line saying all views are fictional. That concedes the trust problem in the abstract and manages none of it in the specific. The blanket notice is gone. In its place, claims are marked individually as grounded in the survey response, drawn from the profile, or extrapolated beyond both. A user should be able to act on one sentence and discount the next.
+
+## The context column gives way
+
+Survey results, the filter and the insight list are browsing tools. During an interview they compete for width with the two things that matter: the respondent and the conversation. The column steps aside rather than staying for the sake of consistency, and the colour key it was holding moves onto the map where a legend belongs.

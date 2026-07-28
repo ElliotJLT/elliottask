@@ -17,6 +17,7 @@ export function SocietyPanel({
   focusName,
   interviewableCount,
   populationCount,
+  compact,
   onSelect,
 }: {
   results: OptionShare[];
@@ -25,6 +26,7 @@ export function SocietyPanel({
   focusName: string | null;
   interviewableCount: number;
   populationCount: number;
+  compact: boolean;
   onSelect: (personaId: string) => void;
 }) {
   const focused = Boolean(focusPersonaId);
@@ -32,7 +34,9 @@ export function SocietyPanel({
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_1px_2px_rgba(29,27,23,0.04)]">
       <header className="flex shrink-0 items-start justify-between gap-8 border-b border-border px-6 py-4">
-        <div className="flex min-w-0 items-start gap-4">
+        <div
+          className={`flex min-w-0 gap-4 ${compact ? "flex-col items-start" : "items-start"}`}
+        >
           {focused ? (
             <Link
               href="/"
@@ -50,7 +54,9 @@ export function SocietyPanel({
 
           <div className="min-w-0">
             <p className="label">{focused ? "Neighbourhood" : "The society"}</p>
-            <p className="mt-1.5 max-w-xl text-[0.8125rem] leading-relaxed text-ink-muted">
+            <p
+              className={`mt-1.5 max-w-xl text-[0.8125rem] leading-relaxed text-ink-muted ${compact ? "hidden" : ""}`}
+            >
               {focused
                 ? `${focusName} and the respondents whose views reach theirs. The rest of the society is still here, behind them. Select another lit respondent to switch.`
                 : "Each dot is one respondent, tied to the neighbours who shape their view and drawn toward the others who answered as they did. Select a lit one to interview them."}
@@ -58,7 +64,9 @@ export function SocietyPanel({
           </div>
         </div>
 
-        <div className="flex shrink-0 flex-col items-end gap-2">
+        <div
+          className={`flex shrink-0 flex-col items-end gap-2 ${compact ? "hidden" : ""}`}
+        >
           <ul className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
             {results.map((result) => {
               const off = !activeOptions.includes(result.option);
@@ -84,12 +92,15 @@ export function SocietyPanel({
       </header>
 
       <div className="flex min-h-0 flex-1 items-center justify-center p-2">
-        <div className="relative aspect-square h-full max-h-full w-full max-w-full">
+        <div
+          className={`relative h-full w-full ${compact ? "" : "aspect-square max-h-full max-w-full"}`}
+        >
           <SocietyStage
             activeOptions={activeOptions}
             focusPersonaId={focusPersonaId}
             selectedPersonaId={focusPersonaId}
             onSelect={onSelect}
+            fill={compact}
           />
         </div>
       </div>

@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { MessageThread } from "./message-thread";
 import { OptionTag } from "./option-tag";
 import { PersonaMark } from "./persona-mark";
+import { ProvenanceNote } from "./provenance-note";
 import type { Message, Persona, SurveyResponse } from "@/lib/types";
 
 /**
- * The conversation, sharing the screen with the society rather than replacing
- * it. The respondent record sits at the top and folds away, so a long
- * transcript can take the height once you know who you are talking to.
+ * The interview, once it has been unlocked. By this point the respondent has
+ * been read and chosen, so the record shrinks to a header line and the
+ * transcript takes the room.
  */
 export function ConversationPanel({
   persona,
@@ -22,134 +23,81 @@ export function ConversationPanel({
   messages: Message[];
   openings: string[];
 }) {
-  const [showRecord, setShowRecord] = useState(true);
-
-  const attributes: Array<[string, string]> = [
-    ["Location", persona.location],
-    ["Industry", persona.industry],
-    ["Seniority", persona.seniority],
-    ["Generation", persona.generation],
-    ["Gender", persona.gender],
-  ];
+  const firstName = persona.name.split(" ")[0];
 
   return (
     <section
       aria-label={`Interview with ${persona.name}`}
-      className="flex h-full w-full flex-col border-l border-border bg-surface"
+      className="flex h-full w-full min-w-0 flex-col bg-surface"
     >
-      <header className="shrink-0 border-b border-border bg-card px-6 py-5">
-        <div className="flex items-start gap-3">
-          <PersonaMark name={persona.name} choice={response?.choice ?? ""} />
-          <div className="min-w-0 flex-1">
-            <h2 className="leading-tight font-medium text-ink">
-              {persona.name}
-            </h2>
-            <p className="mt-0.5 text-[0.8125rem] leading-snug text-ink-muted">
-              {persona.role}, {persona.company}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between gap-3">
-          {response ? (
-            <div className="flex items-baseline gap-2">
-              <OptionTag option={response.choice} />
-              <span className="text-[0.8125rem] text-ink-muted">
-                in this survey
-              </span>
-            </div>
-          ) : (
-            <span />
-          )}
-          <button
-            type="button"
-            onClick={() => setShowRecord((open) => !open)}
-            aria-expanded={showRecord}
-            className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
+      <header className="shrink-0 border-b border-border bg-card px-8 py-4">
+        <div className="flex items-center gap-4">
+          <Link
+            href={`/respondents/${persona.id}`}
+            className="group -ml-2 flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
           >
-            {showRecord ? "Hide record" : "Show record"}
             <span
               aria-hidden
-              className={`transition-transform duration-200 ${showRecord ? "rotate-180" : ""}`}
+              className="transition-transform duration-150 group-hover:-translate-x-0.5"
             >
-              &#8964;
+              &larr;
             </span>
-          </button>
+            Record
+          </Link>
+
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <PersonaMark
+              name={persona.name}
+              choice={response?.choice ?? ""}
+              personaId={persona.id}
+              size="sm"
+            />
+            <div className="flex min-w-0 flex-wrap items-baseline gap-x-2">
+              <h2 className="font-medium text-ink">{persona.name}</h2>
+              <p className="truncate text-[0.8125rem] text-ink-muted">
+                {persona.role}
+              </p>
+            </div>
+            {response ? <OptionTag option={response.choice} /> : null}
+          </div>
+
+          <ProvenanceNote name={firstName} />
         </div>
       </header>
 
-      {/* Record and transcript share one scroll region, so the record is never
-          clipped mid-sentence and folding it away simply gives the transcript
-          the height back. */}
-      <div className="min-h-0 flex-1 overflow-y-auto">
-      {showRecord ? (
-        <div className="border-b border-border bg-surface-sunk px-6 py-5">
-          {response ? (
-            <>
-              <p className="label">Their words in the survey</p>
-              <p className="verbatim mt-2 text-[0.9375rem] leading-relaxed text-ink">
-                &ldquo;{response.comment}&rdquo;
+      <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8">
+        <div className="mx-auto max-w-[44rem]">
+          {messages.length > 0 ? (
+            <MessageThread
+              messages={messages}
+              personaName={persona.name}
+              choice={response?.choice ?? ""}
+            />
+          ) : (
+            <div>
+              <h3 className="text-base font-medium text-ink">
+                Start with what you want to understand
+              </h3>
+              <p className="mt-2 max-w-prose text-[0.9375rem] leading-relaxed text-ink-muted">
+                {firstName} can speak to the answer given in this survey and the
+                profile behind it. Questions past that are answered as
+                extrapolation, and labelled.
               </p>
-            </>
-          ) : null}
 
-          <p className="label mt-6">Profile</p>
-          <dl className="mt-3 flex flex-col gap-2">
-            {attributes.map(([term, value]) => (
-              <div key={term} className="flex items-baseline gap-3">
-                <dt className="w-24 shrink-0 text-[0.8125rem] text-ink-muted">
-                  {term}
-                </dt>
-                <dd className="min-w-0 flex-1 text-[0.8125rem] text-ink">
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-
-          <p className="label mt-6">How this respondent was built</p>
-          <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-muted">
-            A psychographic profile triangulated from anonymised public
-            observations, then placed among the respondents lit on the map, who
-            are the ones whose views shape theirs. Answers come from reasoning
-            over that profile. Anything past it is extrapolation, and the
-            transcript says so.
-          </p>
+              <p className="label mt-8">Openings from this answer</p>
+              <ul className="mt-3 flex flex-col gap-2">
+                {openings.map((opening) => (
+                  <li
+                    key={opening}
+                    className="rounded-lg border border-border bg-card px-4 py-3.5 text-[0.9375rem] leading-relaxed text-ink"
+                  >
+                    {opening}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
-      ) : null}
-
-      <div className="px-6 py-6">
-        {messages.length > 0 ? (
-          <MessageThread
-            messages={messages}
-            personaName={persona.name}
-            choice={response?.choice ?? ""}
-          />
-        ) : (
-          <div>
-            <h3 className="text-[0.9375rem] font-medium text-ink">
-              Start with what you want to understand
-            </h3>
-            <p className="mt-2 text-[0.875rem] leading-relaxed text-ink-muted">
-              {persona.name.split(" ")[0]} can speak to the answer given in this
-              survey and the profile behind it. Questions past that are answered
-              as extrapolation, and labelled.
-            </p>
-
-            <p className="label mt-6">Openings from this answer</p>
-            <ul className="mt-3 flex flex-col gap-2">
-              {openings.map((opening) => (
-                <li
-                  key={opening}
-                  className="rounded-lg border border-border bg-card px-4 py-3 text-[0.875rem] leading-relaxed text-ink"
-                >
-                  {opening}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
       </div>
     </section>
   );
