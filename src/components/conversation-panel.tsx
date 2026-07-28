@@ -13,8 +13,6 @@ import {
 } from "@/lib/transcript-store";
 import type { Citation, Message, Persona, SurveyResponse } from "@/lib/types";
 import { MessageThread, ThinkingRow } from "./message-thread";
-import { OptionTag } from "./option-tag";
-import { PersonaMark } from "./persona-mark";
 import { SourceSummary } from "./source-summary";
 
 /**
@@ -104,27 +102,23 @@ export function ConversationPanel({
       <header className="shrink-0 border-b border-border bg-card px-6 py-3">
         <div className="flex items-center gap-3">
           <Link
-            href={`/respondents/${persona.id}`}
-            className="group flex shrink-0 items-center gap-2 rounded-lg px-2 py-1.5 transition-colors duration-150 hover:bg-surface-sunk"
+            href="/"
+            className="group flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
           >
             <span
               aria-hidden
-              className="text-ink-muted transition-transform duration-150 group-hover:-translate-x-0.5"
+              className="transition-transform duration-150 group-hover:-translate-x-0.5"
             >
               &larr;
             </span>
-            <PersonaMark
-              name={persona.name}
-              choice={response?.choice ?? ""}
-              personaId={persona.id}
-              size="sm"
-            />
-            <span className="font-medium text-ink">{persona.name}</span>
+            All respondents
           </Link>
 
-          {response ? <OptionTag option={response.choice} /> : null}
-
-          <div className="flex-1" />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[0.9375rem] font-medium text-ink">
+              Interview with {persona.name}
+            </p>
+          </div>
 
           <div className="relative shrink-0">
           <button

@@ -48,15 +48,16 @@
   --color-grounded-soft: var(--grounded-soft);
   --color-simulated: var(--simulated);
   --color-simulated-soft: var(--simulated-soft);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-funnel);
   --font-serif: Georgia, "Times New Roman", serif;
-  --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--surface);
   color: var(--ink);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-funnel), system-ui, sans-serif;
+  /* Matches the tracking Radiant sets on their own type. */
+  letter-spacing: -0.01em;
 }
 
 /* Micro-label: the small caption above a value. Used for record fields, never

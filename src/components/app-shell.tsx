@@ -5,6 +5,7 @@ import { useState } from "react";
 import { society } from "@/lib/graph";
 import type { ShellData } from "@/lib/shell-data";
 import { ContextRail } from "./context-rail";
+import { RespondentPanel } from "./respondent-panel";
 import { SocietyPanel } from "./society-panel";
 
 /**
@@ -53,11 +54,11 @@ export function AppShell({
   // text rewrapping. The society keeps its place on the left throughout, which
   // is what makes this read as one screen opening rather than two screens
   // swapping.
-  // The panel carries the width; the society takes what is left. Capping a
-  // flexible column instead would let both sides share the space evenly and the
-  // cap would never be reached, so the contents would overflow their own box.
-  const panelWidth =
-    mode === "browse" ? "0rem" : mode === "record" ? "31rem" : "56rem";
+  // The record keeps one width for its whole life. Opening an interview
+  // collapses the society and lets the record slide into its place, so the
+  // panel a user was reading is the same object in the same shape, moved.
+  const recordWidth = mode === "browse" ? "0rem" : "31rem";
+  const societyCap = mode === "interview" ? "0px" : "200vw";
 
   return (
     <div className="flex h-full">
@@ -87,7 +88,12 @@ export function AppShell({
       </div>
 
       <div className="flex min-w-0 flex-1">
-        <div className="min-w-0 flex-1 overflow-hidden p-5">
+        <div
+          style={{ maxWidth: societyCap }}
+          className={`min-w-0 flex-1 overflow-hidden transition-[max-width,opacity] ${glide} ${
+            mode === "interview" ? "p-0 opacity-0 duration-150" : "p-5 opacity-100"
+          }`}
+        >
           <SocietyPanel
             results={data.results}
             activeOptions={activeOptions}
@@ -103,13 +109,30 @@ export function AppShell({
         </div>
 
         <div
-          style={{ width: panelWidth }}
+          style={{ width: recordWidth }}
           className={`shrink-0 overflow-hidden transition-[width] ${glide}`}
         >
-          <div style={{ width: panelWidth }} className="h-full">
-            {children}
+          <div style={{ width: "31rem" }} className="h-full">
+            {focus ? (
+              <RespondentPanel
+                persona={focus.persona}
+                response={focus.response}
+                conversationId={focus.conversationId}
+                hasTranscript={focus.hasTranscript}
+                inInterview={mode === "interview"}
+              />
+            ) : null}
           </div>
         </div>
+
+        {/* Laid out at the width it will settle at, so the transcript never
+            rewraps while the column opens. Absent entirely until then, or its
+            fixed inner width would claim space the society still needs. */}
+        {mode === "interview" ? (
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <div className="h-full w-[calc(100vw-31rem)]">{children}</div>
+          </div>
+        ) : null}
       </div>
     </div>
   );
