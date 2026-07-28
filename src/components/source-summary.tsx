@@ -63,11 +63,11 @@ export function SourceSummary({ citations }: { citations: Citation[] }) {
   const simulated = citations.length - grounded;
 
   return (
-    <aside
+    <div
       aria-label="Sources used in this interview"
-      className="flex h-full w-full flex-col border-l border-border bg-surface-sunk"
+      className="flex max-h-[26rem] w-[24rem] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-[0_16px_40px_-12px_rgba(29,27,23,0.26)]"
     >
-      <div className="shrink-0 border-b border-border px-6 py-5">
+      <div className="shrink-0 border-b border-border px-5 py-4">
         <p className="label">Sources in this interview</p>
         {citations.length === 0 ? (
           <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-muted">
@@ -87,7 +87,7 @@ export function SourceSummary({ citations }: { citations: Citation[] }) {
         )}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-surface-sunk px-5 py-4">
         <ul className="flex flex-col gap-6">
           {groups.map((entry) => (
             <li key={entry.key}>
@@ -125,6 +125,6 @@ export function SourceSummary({ citations }: { citations: Citation[] }) {
           ))}
         </ul>
       </div>
-    </aside>
+    </div>
   );
 }

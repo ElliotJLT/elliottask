@@ -99,7 +99,7 @@ export function ConversationPanel({
   return (
     <section
       aria-label={`Interview with ${persona.name}`}
-      className="flex h-full w-full min-w-0 flex-col bg-surface"
+      className="flex h-full w-full min-w-0 flex-col border-l border-border bg-surface"
     >
       <header className="shrink-0 border-b border-border bg-card px-6 py-3">
         <div className="flex items-center gap-3">
@@ -126,6 +126,7 @@ export function ConversationPanel({
 
           <div className="flex-1" />
 
+          <div className="relative shrink-0">
           <button
             type="button"
             onClick={() => setShowSources((open) => !open)}
@@ -155,12 +156,18 @@ export function ConversationPanel({
               &#8964;
             </span>
           </button>
+
+          {showSources ? (
+            <div className="absolute top-full right-0 z-30 mt-2 animate-[panel-in_200ms_ease-out]">
+              <SourceSummary citations={transcript.citations} />
+            </div>
+          ) : null}
+          </div>
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1">
       <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8">
-        <div className={`mx-auto max-w-[46rem] ${transcript.messages.length === 0 && !waiting ? "flex min-h-full flex-col justify-center" : ""}`}>
+        <div className={`mx-auto max-w-[42rem] ${transcript.messages.length === 0 && !waiting ? "flex min-h-full flex-col justify-center" : ""}`}>
           {transcript.messages.length === 0 && !waiting ? (
             <div>
               <h3 className="text-base font-medium text-ink">
@@ -217,18 +224,9 @@ export function ConversationPanel({
         </div>
       </div>
 
-        <div
-          className={`shrink-0 overflow-hidden transition-[width] duration-[400ms] ease-[cubic-bezier(0.32,0.72,0,1)] ${showSources ? "w-[22rem]" : "w-0"}`}
-        >
-          <div className="h-full w-[22rem]">
-            <SourceSummary citations={transcript.citations} />
-          </div>
-        </div>
-      </div>
-
       <div className="shrink-0 border-t border-border bg-card px-8 py-5">
         <form
-          className="mx-auto max-w-[46rem]"
+          className="mx-auto max-w-[42rem]"
           onSubmit={(event) => {
             event.preventDefault();
             ask(draft);

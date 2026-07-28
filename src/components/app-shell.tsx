@@ -48,12 +48,14 @@ export function AppShell({
 
   const glide = "duration-[380ms] ease-[cubic-bezier(0.32,0.72,0,1)]";
 
-  // Every column is flexible and capped, and the cap is what animates. Moving
-  // between modes then reads as one panel handing width to another rather than
-  // a cut between two layouts.
-  const societyCap = mode === "interview" ? "0px" : "200vw";
+  // Each panel is laid out at a fixed width and revealed by an animating cap,
+  // so moving between modes widens the right column without a single line of
+  // text rewrapping. The society keeps its place on the left throughout, which
+  // is what makes this read as one screen opening rather than two screens
+  // swapping.
+  const panelWidth = mode === "record" ? "w-[31rem]" : "w-[56rem]";
   const panelCap =
-    mode === "browse" ? "0px" : mode === "record" ? "31rem" : "200vw";
+    mode === "browse" ? "0px" : mode === "record" ? "31rem" : "56rem";
 
   return (
     <div className="flex h-full">
@@ -83,12 +85,7 @@ export function AppShell({
       </div>
 
       <div className="flex min-w-0 flex-1">
-        <div
-          style={{ maxWidth: societyCap }}
-          className={`min-w-0 flex-1 overflow-hidden transition-[max-width,opacity] ${glide} ${
-            mode === "interview" ? "p-0 opacity-0 duration-150" : "p-5 opacity-100"
-          }`}
-        >
+        <div className="min-w-0 flex-1 overflow-hidden p-5">
           <SocietyPanel
             results={data.results}
             activeOptions={activeOptions}
@@ -107,14 +104,7 @@ export function AppShell({
           style={{ maxWidth: panelCap }}
           className={`min-w-0 flex-1 overflow-hidden transition-[max-width] ${glide}`}
         >
-          <div
-            key={mode}
-            className={`h-full animate-[panel-in_320ms_ease-out] ${
-              mode === "record" ? "w-[31rem]" : "w-full"
-            }`}
-          >
-            {children}
-          </div>
+          <div className={`h-full ${panelWidth}`}>{children}</div>
         </div>
       </div>
     </div>
