@@ -46,7 +46,7 @@ export function AppShell({
   const openRecord = (personaId: string) =>
     router.push(`/respondents/${personaId}`);
 
-  const glide = "duration-[600ms] ease-[cubic-bezier(0.32,0.72,0,1)]";
+  const glide = "duration-[380ms] ease-[cubic-bezier(0.32,0.72,0,1)]";
 
   // Every column is flexible and capped, and the cap is what animates. Moving
   // between modes then reads as one panel handing width to another rather than
@@ -86,7 +86,7 @@ export function AppShell({
         <div
           style={{ maxWidth: societyCap }}
           className={`min-w-0 flex-1 overflow-hidden transition-[max-width,opacity] ${glide} ${
-            mode === "interview" ? "p-0 opacity-0 duration-200" : "p-5 opacity-100"
+            mode === "interview" ? "p-0 opacity-0 duration-150" : "p-5 opacity-100"
           }`}
         >
           <SocietyPanel
@@ -108,7 +108,10 @@ export function AppShell({
           className={`min-w-0 flex-1 overflow-hidden transition-[max-width] ${glide}`}
         >
           <div
-            className={`h-full ${mode === "record" ? "w-[31rem]" : "w-full"}`}
+            key={mode}
+            className={`h-full animate-[panel-in_320ms_ease-out] ${
+              mode === "record" ? "w-[31rem]" : "w-full"
+            }`}
           >
             {children}
           </div>
