@@ -53,9 +53,11 @@ export function AppShell({
   // text rewrapping. The society keeps its place on the left throughout, which
   // is what makes this read as one screen opening rather than two screens
   // swapping.
-  const panelWidth = mode === "record" ? "w-[31rem]" : "w-[56rem]";
-  const panelCap =
-    mode === "browse" ? "0px" : mode === "record" ? "31rem" : "56rem";
+  // The panel carries the width; the society takes what is left. Capping a
+  // flexible column instead would let both sides share the space evenly and the
+  // cap would never be reached, so the contents would overflow their own box.
+  const panelWidth =
+    mode === "browse" ? "0rem" : mode === "record" ? "31rem" : "56rem";
 
   return (
     <div className="flex h-full">
@@ -101,10 +103,12 @@ export function AppShell({
         </div>
 
         <div
-          style={{ maxWidth: panelCap }}
-          className={`min-w-0 flex-1 overflow-hidden transition-[max-width] ${glide}`}
+          style={{ width: panelWidth }}
+          className={`shrink-0 overflow-hidden transition-[width] ${glide}`}
         >
-          <div className={`h-full ${panelWidth}`}>{children}</div>
+          <div style={{ width: panelWidth }} className="h-full">
+            {children}
+          </div>
         </div>
       </div>
     </div>
