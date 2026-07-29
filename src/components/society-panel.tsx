@@ -114,7 +114,7 @@ export function SocietyPanel({
 
           {hovered && hover ? (
             <div
-              className="pointer-events-none absolute z-20 animate-[panel-in_140ms_ease-out]"
+              className="pointer-events-none absolute z-20 animate-[fade-in_120ms_ease-out]"
               style={{
                 left: `${hover.x * 100}%`,
                 top: `${hover.y * 100}%`,

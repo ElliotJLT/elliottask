@@ -57,13 +57,23 @@ function CitedClaim({
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <sup className="mx-0.5 -translate-y-[0.15em] cursor-default">
-        <Marker citation={citation} />
+      <sup className="mx-0.5 -translate-y-[0.15em]">
+        <button
+          type="button"
+          onClick={onViewSources}
+          title="View all sources for this interview"
+          className="cursor-pointer align-baseline"
+        >
+          <Marker citation={citation} />
+          <span className="sr-only">
+            {labelFor(citation.source)}. View all sources.
+          </span>
+        </button>
       </sup>
 
       {open ? (
-        <span className="absolute bottom-full left-1/2 z-30 mb-2 block w-[21rem] -translate-x-1/2 animate-[panel-in_140ms_ease-out] overflow-hidden rounded-xl border border-border bg-card text-left shadow-[0_16px_40px_-12px_rgba(29,27,23,0.28)]">
-          <span className="block max-h-[11rem] overflow-y-auto px-4 py-3.5">
+        <span className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 block w-[21rem] -translate-x-1/2 animate-[fade-in_120ms_ease-out] overflow-hidden rounded-xl border border-border bg-card text-left shadow-[0_16px_40px_-12px_rgba(29,27,23,0.28)]">
+          <span className="block max-h-[13rem] overflow-y-auto px-4 py-3.5">
             <span
               className={`block text-[0.75rem] font-medium ${grounded ? "text-grounded" : "text-simulated"}`}
             >
@@ -79,13 +89,6 @@ function CitedClaim({
               )}
             </span>
           </span>
-          <button
-            type="button"
-            onClick={onViewSources}
-            className="pointer-events-auto block w-full border-t border-border bg-surface-sunk px-4 py-2.5 text-left text-[0.75rem] font-medium text-ink-muted transition-colors duration-150 hover:text-accent"
-          >
-            View all sources &rarr;
-          </button>
         </span>
       ) : null}
     </span>
