@@ -57,7 +57,7 @@ export function AppShell({
   // The record keeps one width for its whole life. Opening an interview
   // collapses the society and lets the record slide into its place, so the
   // panel a user was reading is the same object in the same shape, moved.
-  const recordWidth = mode === "browse" ? "0rem" : "31rem";
+  const recordWidth = mode === "browse" ? "0rem" : "28rem";
   const societyCap = mode === "interview" ? "0px" : "200vw";
 
   return (
@@ -112,7 +112,7 @@ export function AppShell({
           style={{ width: recordWidth }}
           className={`flex h-full shrink-0 overflow-hidden transition-[width] ${glide}`}
         >
-          <div style={{ width: "31rem" }} className="h-full shrink-0 overflow-hidden rounded-2xl border border-border">
+          <div style={{ width: "28rem" }} className="h-full shrink-0 overflow-hidden rounded-2xl border border-border">
             {focus ? (
               <RespondentPanel
                 persona={focus.persona}
@@ -130,7 +130,7 @@ export function AppShell({
             fixed inner width would claim space the society still needs. */}
         {mode === "interview" ? (
           <div className="flex h-full min-w-0 flex-1 overflow-hidden">
-            <div className="h-full w-[calc(100vw-33.5rem)] shrink-0 overflow-hidden rounded-2xl border border-border">
+            <div className="h-full w-[calc(100vw-30.5rem)] shrink-0 overflow-hidden rounded-2xl border border-border">
               {children}
             </div>
           </div>

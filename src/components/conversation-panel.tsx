@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { citationsFor, stageReply } from "@/lib/replies";
 import {
@@ -101,19 +100,6 @@ export function ConversationPanel({
     >
       <header className="flex h-[4.75rem] shrink-0 items-center border-b border-border bg-card px-6">
         <div className="flex w-full items-center gap-3">
-          <Link
-            href="/"
-            className="group flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
-          >
-            <span
-              aria-hidden
-              className="transition-transform duration-150 group-hover:-translate-x-0.5"
-            >
-              &larr;
-            </span>
-            All respondents
-          </Link>
-
           <div className="min-w-0 flex-1">
             <p className="truncate text-[0.9375rem] font-medium text-ink">
               Interview with {persona.name}

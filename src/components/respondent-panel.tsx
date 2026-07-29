@@ -32,7 +32,21 @@ export function RespondentPanel({
       className="flex h-full w-full flex-col bg-card"
     >
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="flex h-[4.75rem] shrink-0 items-center gap-3 border-b border-border bg-card px-7">
+        <div className="flex h-[4.75rem] shrink-0 items-center gap-3 border-b border-border bg-card px-6">
+          {inInterview ? (
+            <Link
+              href="/"
+              aria-label="Back to all respondents"
+              className="group -ml-1 flex shrink-0 items-center gap-1 rounded-lg py-1.5 pr-1 pl-1 text-ink-muted transition-colors duration-150 hover:text-ink"
+            >
+              <span aria-hidden className="text-base leading-none">
+                &larr;
+              </span>
+              <span className="max-w-0 overflow-hidden text-[0.75rem] font-medium whitespace-nowrap transition-all duration-200 group-hover:max-w-[7rem]">
+                All respondents
+              </span>
+            </Link>
+          ) : null}
           <PersonaMark
             name={persona.name}
             choice={response?.choice ?? ""}
@@ -49,21 +63,25 @@ export function RespondentPanel({
         </div>
 
         {response ? (
-          <div className="border-b border-border px-7 py-7">
+          <div className="border-b border-border px-6 py-6">
             <div className="flex items-baseline gap-2">
               <span className="label">Answered</span>
               <OptionTag option={response.choice} />
             </div>
-            <blockquote className="verbatim mt-5 text-[1.25rem] leading-[1.6] text-ink">
-              &ldquo;{response.comment}&rdquo;
-            </blockquote>
-            <p className="mt-5 text-[0.75rem] text-ink-muted">
-              Their own words in the survey, unedited.
-            </p>
+            {inInterview ? null : (
+              <>
+                <blockquote className="verbatim mt-5 text-[1.1875rem] leading-[1.6] text-ink">
+                  &ldquo;{response.comment}&rdquo;
+                </blockquote>
+                <p className="mt-5 text-[0.75rem] text-ink-muted">
+                  Their own words in the survey, unedited.
+                </p>
+              </>
+            )}
           </div>
         ) : null}
 
-        <div className="px-7 py-6 pb-8">
+        <div className="px-6 py-6 pb-8">
           <p className="label">Profile</p>
           <div className="mt-3">
             <AttributePills persona={persona} />
@@ -78,7 +96,7 @@ export function RespondentPanel({
           the footer goes rather than standing in the primary slot saying
           nothing. */}
       {inInterview || !conversationId ? null : (
-        <div className="shrink-0 border-t border-border bg-card px-7 py-5">
+        <div className="shrink-0 border-t border-border bg-card px-6 py-5">
           <Link
             href={`/interviews/${conversationId}`}
             className="group flex items-center justify-between rounded-xl bg-accent px-5 py-3.5 font-medium text-white transition-colors duration-150 hover:bg-[#bd5637]"

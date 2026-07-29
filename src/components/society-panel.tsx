@@ -40,7 +40,7 @@ export function SocietyPanel({
           {focused ? (
             <Link
               href="/"
-              className="group -ml-2 flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[0.8125rem] font-medium text-ink transition-colors duration-150 hover:bg-surface-sunk"
+              className="group -ml-1.5 flex shrink-0 items-center gap-1.5 rounded-lg px-1.5 py-1 text-[0.75rem] font-medium text-ink-muted transition-colors duration-150 hover:text-ink"
             >
               <span
                 aria-hidden
