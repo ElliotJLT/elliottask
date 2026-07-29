@@ -73,7 +73,7 @@ export function RespondentPanel({
         </div>
 
         {response ? (
-          <div className="border-b border-border px-6 py-6">
+          <div className="border-b border-border px-6 py-5">
             <div className="flex items-baseline gap-2">
               <span className="label">Answered</span>
               <OptionTag option={response.choice} />
@@ -83,12 +83,12 @@ export function RespondentPanel({
                 <blockquote className="verbatim mt-5 text-[1.1875rem] leading-[1.6] text-ink">
                   &ldquo;{response.comment}&rdquo;
                 </blockquote>
-                <p className="mt-5 text-[0.75rem] text-ink-muted">
+                <p className="mt-4 text-[0.75rem] text-ink-muted">
                   Their own words in the survey, unedited.
                 </p>
               </>
             )}
-            <div className="mt-4">
+            <div className="mt-3.5">
               <ProvenanceNote name={firstName} />
             </div>
           </div>

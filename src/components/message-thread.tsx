@@ -84,8 +84,8 @@ function FeedbackBox({
   onClose: () => void;
 }) {
   return (
-    <div className="absolute bottom-full left-0 z-30 mb-2 w-[22rem] animate-[fade-in_120ms_ease-out] rounded-xl border border-border bg-card p-3.5 shadow-[0_16px_40px_-12px_rgba(29,27,23,0.28)]">
-      <div className="flex items-start justify-between gap-3">
+    <div className="absolute bottom-full left-0 z-30 mb-2.5 w-[23rem] animate-[fade-in_120ms_ease-out] rounded-xl border border-border-strong bg-card p-3 shadow-[0_22px_55px_-14px_rgba(29,27,23,0.5)]">
+      <div className="flex items-start justify-between gap-3 px-0.5">
         <p className="text-[0.8125rem] font-medium text-ink">
           What didn&apos;t work about this reply?{" "}
           <span className="font-normal text-ink-muted">(optional)</span>
@@ -110,7 +110,7 @@ function FeedbackBox({
         </button>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-2.5 grid grid-cols-3 gap-1.5">
         {DOWN_REASONS.map((reason) => {
           const on = selected.includes(reason);
           return (
@@ -119,7 +119,7 @@ function FeedbackBox({
               type="button"
               onClick={() => onToggle(reason)}
               aria-pressed={on}
-              className={`rounded-lg border px-3 py-1.5 text-[0.8125rem] transition-colors duration-150 ${
+              className={`rounded-lg border px-1.5 py-2 text-center text-[0.75rem] transition-colors duration-150 ${
                 on
                   ? "border-accent bg-accent-soft text-ink"
                   : "border-border text-ink-muted hover:border-border-strong hover:text-ink"
