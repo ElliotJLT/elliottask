@@ -46,9 +46,9 @@ export function suggestedFollowUps(response: SurveyResponse): string[] {
 
   if (contender) {
     followUps.push(`What would make you switch to ${contender.option}?`);
+  } else {
+    followUps.push("Where does your answer stop being backed by data?");
   }
-
-  followUps.push("Where does your answer stop being backed by data?");
 
   return followUps;
 }
