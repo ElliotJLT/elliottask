@@ -97,6 +97,21 @@ body {
   }
 }
 
+/* The staged pause: three dots lifting in sequence. Honest about duration
+   without pretending the persona is typing. */
+@keyframes typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
 /* The interview arrives whole rather than growing into place. */
 @keyframes panel-rise {
   from {

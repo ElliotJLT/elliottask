@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { citationsFor, stageReply } from "@/lib/replies";
+import { suggestedFollowUps } from "@/lib/openings";
+import { downloadTranscript } from "@/lib/transcript-export";
 import {
   messageId,
   readTranscript,
@@ -11,8 +13,10 @@ import {
   type Transcript,
 } from "@/lib/transcript-store";
 import type { Citation, Message, Persona, SurveyResponse } from "@/lib/types";
-import { getSourcesOpen, setSourcesOpen, subscribeUi } from "@/lib/ui-store";
+import { setSourcesOpen } from "@/lib/ui-store";
+import { InvitePicker } from "./invite-picker";
 import { MessageThread, ThinkingRow } from "./message-thread";
+import { PersonaMark } from "./persona-mark";
 
 /**
  * The interview. By this point the respondent has been read and chosen, so the
@@ -43,11 +47,6 @@ export function ConversationPanel({
   );
   const [draft, setDraft] = useState("");
   const [waiting, setWaiting] = useState(false);
-  const showSources = useSyncExternalStore(
-    subscribeUi,
-    getSourcesOpen,
-    () => false,
-  );
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,6 +96,13 @@ export function ConversationPanel({
     }, 900);
   };
 
+  const empty = transcript.messages.length === 0;
+  // Openings while the thread is cold, follow-ups once it is under way. Either
+  // way the suggestions come from this respondent's own answer, so a next
+  // question is one tap rather than a cold box.
+  const suggestions =
+    empty || !response ? openings : suggestedFollowUps(response);
+
   return (
     <section
       aria-label={`Interview with ${persona.name}`}
@@ -104,50 +110,54 @@ export function ConversationPanel({
     >
       <header className="flex h-[4.75rem] shrink-0 items-center border-b border-border bg-card px-6">
         <div className="flex w-full items-center gap-3">
+          <PersonaMark
+            name={persona.name}
+            choice={response?.choice ?? ""}
+            personaId={persona.id}
+            size="sm"
+          />
           <div className="min-w-0 flex-1">
             <p className="truncate text-[0.9375rem] font-medium text-ink">
-              Interview with {persona.name}
+              {persona.name}
+            </p>
+            <p className="truncate text-[0.75rem] text-ink-muted">
+              Simulated respondent
             </p>
           </div>
 
-          <div className="relative shrink-0">
           <button
             type="button"
-            onClick={() => setSourcesOpen(!showSources)}
-            aria-expanded={showSources}
-            className={`flex shrink-0 items-center gap-2 rounded-lg border px-3 py-1.5 text-[0.8125rem] font-medium transition-colors duration-150 ${
-              showSources
-                ? "border-border-strong bg-surface-sunk text-ink"
-                : "border-border bg-card text-ink-muted hover:border-border-strong hover:text-ink"
-            }`}
+            onClick={() =>
+              downloadTranscript(
+                persona,
+                response,
+                transcript.messages,
+                transcript.citations,
+              )
+            }
+            disabled={empty}
+            className="flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:border-border-strong hover:text-ink disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Sources
-            <span className="rounded-full bg-surface-sunk px-1.5 text-[0.75rem] tabular-nums">
-              {
-                new Set(
-                  transcript.citations.map((citation) =>
-                    citation.source.kind === "simulated"
-                      ? citation.source.note
-                      : (citation.quote ?? ""),
-                  ),
-                ).size
-              }
-            </span>
-            <span
+            <svg
+              viewBox="0 0 16 16"
               aria-hidden
-              className={`transition-transform duration-200 ${showSources ? "rotate-180" : ""}`}
+              className="size-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              &#8964;
-            </span>
+              <path d="M8 2.5v7M5 7l3 3 3-3M3 12.5h10" />
+            </svg>
+            Export transcript
           </button>
-
-          </div>
         </div>
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8">
-        <div className={`mx-auto max-w-[42rem] ${transcript.messages.length === 0 && !waiting ? "flex min-h-full flex-col justify-center" : ""}`}>
-          {transcript.messages.length === 0 && !waiting ? (
+        <div className={`mx-auto max-w-[42rem] ${empty && !waiting ? "flex min-h-full flex-col justify-center" : ""}`}>
+          {empty && !waiting ? (
             <div>
               <h3 className="text-base font-medium text-ink">
                 Start with what you want to understand
@@ -155,35 +165,16 @@ export function ConversationPanel({
               <p className="mt-2 max-w-prose text-[0.9375rem] leading-relaxed text-ink-muted">
                 {firstName} answers from the survey response and the profile
                 behind it. Every claim is marked with where it came from, and
-                anything past that data is marked as extrapolation.
+                anything past that data is marked as extrapolation. Pick a
+                question below to begin, or ask your own.
               </p>
-
-              <p className="label mt-8">Openings from this answer</p>
-              <ul className="mt-3 flex flex-col gap-2">
-                {openings.map((opening) => (
-                  <li key={opening}>
-                    <button
-                      type="button"
-                      onClick={() => ask(opening)}
-                      className="group flex w-full items-center justify-between gap-4 rounded-lg border border-border bg-card px-4 py-3.5 text-left text-[0.9375rem] leading-relaxed text-ink transition-colors duration-150 hover:border-border-strong"
-                    >
-                      {opening}
-                      <span
-                        aria-hidden
-                        className="shrink-0 text-ink-muted transition-transform duration-150 group-hover:translate-x-0.5"
-                      >
-                        &rarr;
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
             </div>
           ) : (
             <>
               <MessageThread
                 messages={transcript.messages}
                 citations={transcript.citations}
+                conversationId={conversationId}
                 personaName={persona.name}
                 personaId={persona.id}
                 choice={response?.choice ?? ""}
@@ -205,41 +196,77 @@ export function ConversationPanel({
       </div>
 
       <div className="shrink-0 border-t border-border bg-card px-8 py-5">
-        <form
-          className="mx-auto max-w-[42rem]"
-          onSubmit={(event) => {
-            event.preventDefault();
-            ask(draft);
-          }}
-        >
-          <div className="flex items-end gap-3 rounded-xl border border-border bg-surface px-4 py-3 focus-within:border-border-strong">
-            <textarea
-              value={draft}
-              onChange={(event) => setDraft(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && !event.shiftKey) {
-                  event.preventDefault();
-                  ask(draft);
-                }
-              }}
-              rows={1}
-              placeholder={`Ask ${firstName} about their answer`}
-              aria-label={`Ask ${firstName} a question`}
-              className="max-h-32 min-h-[1.5rem] flex-1 resize-none bg-transparent text-[0.9375rem] leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none"
-            />
-            <button
-              type="submit"
-              disabled={!draft.trim() || waiting}
-              className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-[#bd5637] disabled:cursor-not-allowed disabled:bg-border-strong"
-            >
-              Ask
-            </button>
-          </div>
+        <div className="mx-auto max-w-[42rem]">
+          {/* Suggested questions, derived from this respondent's answer. Cold
+              thread gets openings; a live one gets follow-ups. */}
+          {response && !waiting ? (
+            <div className="mb-3">
+              <p className="label mb-2">
+                {empty ? "Openings from this answer" : "Follow-ups"}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => ask(suggestion)}
+                    className="group flex items-center gap-1.5 rounded-full border border-border bg-surface px-3.5 py-2 text-left text-[0.8125rem] leading-snug text-ink transition-colors duration-150 hover:border-border-strong hover:bg-card"
+                  >
+                    <span
+                      aria-hidden
+                      className="text-ink-muted transition-transform duration-150 group-hover:translate-x-0.5"
+                    >
+                      &rarr;
+                    </span>
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              ask(draft);
+            }}
+          >
+            <div className="flex items-end gap-3 rounded-xl border border-border bg-surface px-4 py-3 focus-within:border-border-strong">
+              <textarea
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" && !event.shiftKey) {
+                    event.preventDefault();
+                    ask(draft);
+                  }
+                }}
+                rows={1}
+                placeholder={`Ask ${firstName} about their answer`}
+                aria-label={`Ask ${firstName} a question`}
+                className="max-h-32 min-h-[1.5rem] flex-1 resize-none bg-transparent text-[0.9375rem] leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none"
+              />
+              <button
+                type="submit"
+                disabled={!draft.trim() || waiting}
+                className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-[#bd5637] disabled:cursor-not-allowed disabled:bg-border-strong"
+              >
+                Ask
+              </button>
+            </div>
+
+            {/* Group interview lives with the composer: the picker that would
+                bring another respondent or a survey segment into the thread. */}
+            <div className="mt-2.5 flex items-center gap-2">
+              <InvitePicker current={persona} />
+            </div>
+          </form>
+
           <p className="mt-2.5 text-[0.75rem] text-ink-muted">
             {firstName} is a simulated respondent. Claims are marked as grounded
             in their data or as the model reasoning past it.
           </p>
-        </form>
+        </div>
       </div>
     </section>
   );
