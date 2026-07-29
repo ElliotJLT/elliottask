@@ -112,6 +112,17 @@ body {
   }
 }
 
+/* A recent chat invites the click with a small repeating nudge on hover. */
+@keyframes nudge-x {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
 /* A rating registers with a small pop rather than a silent state flip. */
 @keyframes thumb-pop {
   0% {

@@ -5,7 +5,6 @@ import { useState, useSyncExternalStore } from "react";
 import { stripMarkers } from "@/lib/format";
 import type { ShellConversation, ShellData } from "@/lib/shell-data";
 import {
-  clearTranscript,
   readTranscript,
   subscribe,
   type Transcript,
@@ -127,7 +126,7 @@ function RailSection({
           type="button"
           onClick={onToggle}
           aria-expanded={open}
-          className="flex flex-1 items-center gap-2 py-3.5 pl-7 text-left"
+          className="flex flex-1 items-center gap-2 py-3 pl-7 text-left"
         >
           <span className="label">{title}</span>
           {count != null && count > 0 ? (
@@ -144,7 +143,7 @@ function RailSection({
         </button>
         {open ? action : null}
       </div>
-      {open ? <div className="px-7 pt-1 pb-6">{children}</div> : null}
+      {open ? <div className="px-7 pt-0.5 pb-5">{children}</div> : null}
     </div>
   );
 }
@@ -188,11 +187,6 @@ export function ContextRail({
     },
   );
 
-  const startNew = (conversationId: string) => {
-    clearTranscript(conversationId);
-    router.push(`/interviews/${conversationId}`);
-  };
-
   const [open, setOpen] = useState({
     result: true,
     insights: false,
@@ -206,9 +200,9 @@ export function ContextRail({
       aria-label="Survey context"
       className="flex h-full w-full flex-col bg-card"
     >
-      <div className="shrink-0 px-7 pt-7 pb-6">
+      <div className="shrink-0 px-7 pt-6 pb-5">
         <p className="label">Simulated survey</p>
-        <h1 className="mt-2.5 text-[1.0625rem] leading-snug font-medium text-ink">
+        <h1 className="mt-2 text-[1.0625rem] leading-snug font-medium text-ink">
           {data.survey.question}
         </h1>
         <p className="mt-2.5 text-[0.8125rem] text-ink-muted">
@@ -243,7 +237,7 @@ export function ContextRail({
                     type="button"
                     onClick={() => onToggleOption(result.option)}
                     aria-pressed={!off}
-                    className={`flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left transition-colors duration-150 hover:bg-surface-sunk ${
+                    className={`flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left transition-colors duration-150 hover:bg-surface-sunk ${
                       off ? "opacity-40" : ""
                     }`}
                   >
@@ -274,7 +268,7 @@ export function ContextRail({
           open={open.insights}
           onToggle={() => toggle("insights")}
         >
-          <ul className="flex flex-col gap-6">
+          <ul className="flex flex-col gap-5">
             {data.insights.map((insight) => (
               <li key={insight.id}>
                 {insight.stat ? (
@@ -302,67 +296,49 @@ export function ContextRail({
             open={open.recent}
             onToggle={() => toggle("recent")}
           >
-            {/* A list of chats: click a row to resume, the restart on hover to
-                start it over. Kept to one respondent, one status, one line of
-                the last thing said. */}
+            {/* A list of chats: one respondent, one status, one line of the last
+                thing said. Click anywhere to drop straight into the thread; on
+                hover an arrow nudges to say so. */}
             <ul className="-mx-2 flex flex-col">
               {recent.map((item) => {
                 const active = item.conversationId === activeConversationId;
                 return (
                   <li key={item.conversationId}>
-                    <div className="group relative">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          router.push(`/interviews/${item.conversationId}`)
-                        }
-                        aria-current={active ? "page" : undefined}
-                        className={`flex w-full items-start gap-2.5 rounded-lg px-2 py-2 text-left transition-colors duration-150 ${
-                          active ? "bg-surface-sunk" : "hover:bg-surface-sunk"
-                        }`}
-                      >
-                        <PersonaMark
-                          name={item.personaName}
-                          choice={item.choice}
-                          personaId={item.personaId}
-                          size="sm"
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="flex items-center gap-2">
-                            <span className="min-w-0 flex-1 truncate text-[0.875rem] font-medium text-ink">
-                              {item.personaName}
-                            </span>
-                            <StatusBadge status={item.status} />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        router.push(`/interviews/${item.conversationId}`)
+                      }
+                      aria-current={active ? "page" : undefined}
+                      className={`group flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors duration-150 ${
+                        active ? "bg-surface-sunk" : "hover:bg-surface-sunk"
+                      }`}
+                    >
+                      <PersonaMark
+                        name={item.personaName}
+                        choice={item.choice}
+                        personaId={item.personaId}
+                        size="sm"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-2">
+                          <span className="min-w-0 flex-1 truncate text-[0.875rem] font-medium text-ink">
+                            {item.personaName}
                           </span>
-                          <span className="mt-0.5 block truncate pr-6 text-[0.75rem] text-ink-muted">
-                            {item.fromPersona ? "" : "You: "}
-                            {item.preview}
-                          </span>
+                          <StatusBadge status={item.status} />
                         </span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => startNew(item.conversationId)}
-                        title="Start new — clear this thread and begin again"
-                        aria-label="Start new interview"
-                        className="absolute right-1.5 bottom-1.5 flex size-6 items-center justify-center rounded-md text-ink-muted opacity-0 transition-all duration-150 hover:bg-card hover:text-ink group-hover:opacity-100"
+                        <span className="mt-0.5 block truncate text-[0.75rem] text-ink-muted">
+                          {item.fromPersona ? "" : "You: "}
+                          {item.preview}
+                        </span>
+                      </span>
+                      <span
+                        aria-hidden
+                        className="flex w-4 shrink-0 justify-center self-center text-ink-muted opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-hover:animate-[nudge-x_900ms_ease-in-out_infinite]"
                       >
-                        <svg
-                          viewBox="0 0 16 16"
-                          aria-hidden
-                          className="size-3.5"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.4"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M12.8 6.6A4.6 4.6 0 1 0 13 9" />
-                          <path d="M13 3v3.6h-3.6" />
-                        </svg>
-                      </button>
-                    </div>
+                        &rarr;
+                      </span>
+                    </button>
                   </li>
                 );
               })}
