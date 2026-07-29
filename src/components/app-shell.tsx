@@ -146,6 +146,7 @@ export function AppShell({
                 conversationId={focus.conversationId}
                 hasTranscript={focus.hasTranscript}
                 inInterview={mode === "interview"}
+                activeConversationId={openConversationId}
               />
             ) : null}
           </div>

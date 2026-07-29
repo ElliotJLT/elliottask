@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Persona, SurveyResponse } from "@/lib/types";
 import { AttributePills } from "./attribute-pills";
+import { FindingsSection } from "./findings-section";
 import { OptionTag } from "./option-tag";
 import { PersonaMark } from "./persona-mark";
 import { ProvenanceNote } from "./provenance-note";
@@ -17,12 +18,14 @@ export function RespondentPanel({
   conversationId,
   hasTranscript,
   inInterview = false,
+  activeConversationId = null,
 }: {
   persona: Persona;
   response: SurveyResponse | undefined;
   conversationId: string | undefined;
   hasTranscript: boolean;
   inInterview?: boolean;
+  activeConversationId?: string | null;
 }) {
   const firstName = persona.name.split(" ")[0];
 
@@ -87,6 +90,8 @@ export function RespondentPanel({
             )}
           </div>
         ) : null}
+
+        <FindingsSection activeConversationId={activeConversationId} />
 
         <div className="px-6 py-6 pb-8">
           <p className="label">Profile</p>
