@@ -195,12 +195,12 @@ export function ConversationPanel({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-border bg-card px-8 py-5">
+      <div className="shrink-0 border-t border-border bg-card px-8 py-4">
         <div className="mx-auto max-w-[42rem]">
           {/* Suggested questions, derived from this respondent's answer. Cold
               thread gets openings; a live one gets follow-ups. */}
           {response && !waiting ? (
-            <div className="mb-3">
+            <div className="mb-2.5">
               <p className="label mb-2">
                 {empty ? "Openings from this answer" : "Follow-ups"}
               </p>
@@ -210,7 +210,7 @@ export function ConversationPanel({
                     key={suggestion}
                     type="button"
                     onClick={() => ask(suggestion)}
-                    className="group flex items-center gap-1.5 rounded-full border border-border bg-surface px-3.5 py-2 text-left text-[0.8125rem] leading-snug text-ink transition-colors duration-150 hover:border-border-strong hover:bg-card"
+                    className="group flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-left text-[0.8125rem] leading-snug text-ink transition-colors duration-150 hover:border-border-strong hover:bg-card"
                   >
                     <span
                       aria-hidden
@@ -231,7 +231,11 @@ export function ConversationPanel({
               ask(draft);
             }}
           >
-            <div className="rounded-2xl border border-border bg-surface px-3 pt-3 pb-2 focus-within:border-border-strong">
+            {/* Standard chat input: one field that grows with content, the
+                add and send fixed to the ends and bottom-aligned so they hold
+                still as the text wraps. */}
+            <div className="flex items-end gap-1.5 rounded-2xl border border-border bg-surface px-2 py-1.5 focus-within:border-border-strong">
+              <ComposerPlusMenu current={persona} />
               <textarea
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
@@ -244,38 +248,30 @@ export function ConversationPanel({
                 rows={1}
                 placeholder={`Ask ${firstName} about their answer`}
                 aria-label={`Ask ${firstName} a question`}
-                className="block max-h-32 min-h-[1.5rem] w-full resize-none bg-transparent px-1 text-[0.9375rem] leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none"
+                className="block max-h-[200px] min-h-[2.25rem] flex-1 resize-none bg-transparent px-1 py-2 text-[0.9375rem] leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none"
               />
-
-              {/* Composer toolbar: add lives in the plus menu on the left,
-                  send on the right, with a couple of controls the product would
-                  grow into kept present but inert. */}
-              <div className="mt-1.5 flex items-center gap-1">
-                <ComposerPlusMenu current={persona} />
-                <div className="flex-1" />
-                <button
-                  type="button"
-                  disabled
-                  aria-label="Voice input"
-                  title="Voice input"
-                  className="flex size-8 items-center justify-center rounded-lg text-ink-muted opacity-45"
-                >
-                  <svg viewBox="0 0 16 16" aria-hidden className="size-[1.125rem]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="6" y="2" width="4" height="7" rx="2" />
-                    <path d="M4 7.5a4 4 0 0 0 8 0M8 11.5V14" />
-                  </svg>
-                </button>
-                <button
-                  type="submit"
-                  disabled={!draft.trim() || waiting}
-                  aria-label="Send"
-                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-white transition-colors duration-150 hover:bg-[#bd5637] disabled:cursor-not-allowed disabled:bg-border-strong"
-                >
-                  <svg viewBox="0 0 16 16" aria-hidden className="size-4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M8 12.5v-9M4.5 7 8 3.5 11.5 7" />
-                  </svg>
-                </button>
-              </div>
+              <button
+                type="button"
+                disabled
+                aria-label="Voice input"
+                title="Voice input"
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg text-ink-muted opacity-45"
+              >
+                <svg viewBox="0 0 16 16" aria-hidden className="size-[1.125rem]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="6" y="2" width="4" height="7" rx="2" />
+                  <path d="M4 7.5a4 4 0 0 0 8 0M8 11.5V14" />
+                </svg>
+              </button>
+              <button
+                type="submit"
+                disabled={!draft.trim() || waiting}
+                aria-label="Send"
+                className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-white transition-colors duration-150 hover:bg-[#bd5637] disabled:cursor-not-allowed disabled:bg-border-strong"
+              >
+                <svg viewBox="0 0 16 16" aria-hidden className="size-4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M8 12.5v-9M4.5 7 8 3.5 11.5 7" />
+                </svg>
+              </button>
             </div>
           </form>
 
