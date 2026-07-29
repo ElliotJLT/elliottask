@@ -1,6 +1,6 @@
 import { formatTime } from "@/lib/format";
 import type { Citation, Message } from "@/lib/types";
-import { CitedText, SourceList } from "./citations";
+import { CitedText } from "./citations";
 import { PersonaMark } from "./persona-mark";
 
 function UserMessage({ message }: { message: Message }) {
@@ -24,12 +24,14 @@ function PersonaMessage({
   personaName,
   personaId,
   choice,
+  onViewSources,
 }: {
   message: Message;
   citations: Citation[];
   personaName: string;
   personaId: string;
   choice: string;
+  onViewSources: () => void;
 }) {
   return (
     <li>
@@ -48,8 +50,11 @@ function PersonaMessage({
         </span>
       </div>
       <div className="mt-2 ml-[2.625rem] rounded-xl rounded-tl-sm border border-border bg-card px-5 py-4">
-        <CitedText content={message.content} citations={citations} />
-        <SourceList citations={citations} />
+        <CitedText
+          content={message.content}
+          citations={citations}
+          onViewSources={onViewSources}
+        />
       </div>
     </li>
   );
@@ -102,12 +107,14 @@ export function MessageThread({
   personaName,
   personaId,
   choice,
+  onViewSources,
 }: {
   messages: Message[];
   citations: Citation[];
   personaName: string;
   personaId: string;
   choice: string;
+  onViewSources: () => void;
 }) {
   return (
     <ol className="flex flex-col gap-7">
@@ -122,6 +129,7 @@ export function MessageThread({
             personaName={personaName}
             personaId={personaId}
             choice={choice}
+            onViewSources={onViewSources}
           />
         ),
       )}

@@ -55,7 +55,13 @@ function group(citations: Citation[]): Group[] {
  * question a client actually takes into a decision, which is how much of the
  * whole conversation was evidence and how much was the model reasoning.
  */
-export function SourceSummary({ citations }: { citations: Citation[] }) {
+export function SourceSummary({
+  citations,
+  onClose,
+}: {
+  citations: Citation[];
+  onClose: () => void;
+}) {
   const groups = group(citations);
   const grounded = citations.filter(
     (citation) => citation.source.kind !== "simulated",
@@ -65,10 +71,20 @@ export function SourceSummary({ citations }: { citations: Citation[] }) {
   return (
     <div
       aria-label="Sources used in this interview"
-      className="flex max-h-[26rem] w-[24rem] flex-col overflow-hidden rounded-xl border border-border bg-card shadow-[0_16px_40px_-12px_rgba(29,27,23,0.26)]"
+      className="flex h-full w-full flex-col bg-card"
     >
       <div className="shrink-0 border-b border-border px-5 py-4">
-        <p className="label">Sources in this interview</p>
+        <div className="flex items-start justify-between gap-3">
+          <p className="label">Sources in this interview</p>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close sources"
+            className="-mt-1 -mr-1 rounded-md px-1.5 py-0.5 text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
+          >
+            &times;
+          </button>
+        </div>
         {citations.length === 0 ? (
           <p className="mt-2 text-[0.8125rem] leading-relaxed text-ink-muted">
             Nothing cited yet. Every claim in a reply will appear here with what

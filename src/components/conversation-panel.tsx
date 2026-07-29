@@ -137,15 +137,11 @@ export function ConversationPanel({
             </span>
           </button>
 
-          {showSources ? (
-            <div className="absolute top-full right-0 z-30 mt-2 animate-[panel-in_200ms_ease-out]">
-              <SourceSummary citations={transcript.citations} />
-            </div>
-          ) : null}
           </div>
         </div>
       </header>
 
+      <div className="flex min-h-0 flex-1">
       <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8">
         <div className={`mx-auto max-w-[42rem] ${transcript.messages.length === 0 && !waiting ? "flex min-h-full flex-col justify-center" : ""}`}>
           {transcript.messages.length === 0 && !waiting ? (
@@ -188,6 +184,7 @@ export function ConversationPanel({
                 personaName={persona.name}
                 personaId={persona.id}
                 choice={response?.choice ?? ""}
+                onViewSources={() => setShowSources(true)}
               />
               {waiting ? (
                 <ol className="mt-7">
@@ -201,6 +198,20 @@ export function ConversationPanel({
             </>
           )}
           <div ref={endRef} />
+        </div>
+      </div>
+
+        <div
+          className={`shrink-0 overflow-hidden border-l border-border transition-[width] duration-[300ms] ease-[cubic-bezier(0.32,0.72,0,1)] ${
+            showSources ? "w-[21rem]" : "w-0"
+          }`}
+        >
+          <div className="h-full w-[21rem]">
+            <SourceSummary
+              citations={transcript.citations}
+              onClose={() => setShowSources(false)}
+            />
+          </div>
         </div>
       </div>
 
