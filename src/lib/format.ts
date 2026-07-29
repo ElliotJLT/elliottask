@@ -25,3 +25,8 @@ export function formatTime(iso: string): string {
   const minutes = date.getUTCMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 }
+
+/** Drop the [n] citation tokens so a reply reads cleanly out of context. */
+export function stripMarkers(content: string): string {
+  return content.replace(/\s*\[\d+\]/g, "").replace(/\s+/g, " ").trim();
+}

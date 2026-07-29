@@ -49,6 +49,14 @@ export function writeTranscript(id: string, next: Transcript): void {
   for (const listener of listeners) listener();
 }
 
+/** Start over: drop the stored thread so the interview reopens empty. */
+export function clearTranscript(id: string): void {
+  const empty: Transcript = { messages: [], citations: [] };
+  cache.set(id, empty);
+  window.localStorage.setItem(KEY + id, JSON.stringify(empty));
+  for (const listener of listeners) listener();
+}
+
 /** Impure by nature, so kept out of component bodies. */
 export function messageId(suffix = ""): string {
   return `msg_${Date.now().toString(36)}${suffix}`;
