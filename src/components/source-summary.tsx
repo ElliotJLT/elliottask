@@ -17,6 +17,44 @@ interface Group {
 }
 
 /**
+ * A mark per kind of source. Quote marks for what the respondent said, a
+ * figure for what their profile holds, and an open question for what the
+ * survey never asked, so the three are separable before any label is read.
+ */
+const ICONS: Record<string, React.ReactNode> = {
+  survey: <path d="M6 4.5C4.3 5.6 3.5 7.1 3.5 9v2.5h3.2V8.2H5.2c0-1.2.4-2.1 1.3-2.8Zm6 0c-1.7 1.1-2.5 2.6-2.5 4.5v2.5h3.2V8.2h-1.5c0-1.2.4-2.1 1.3-2.8Z" />,
+  profile: (
+    <>
+      <circle cx="8" cy="5.6" r="2.5" />
+      <path d="M3.4 13.2c0-2.4 2-3.9 4.6-3.9s4.6 1.5 4.6 3.9" />
+    </>
+  ),
+  simulated: (
+    <>
+      <circle cx="8" cy="8" r="5.8" strokeDasharray="2.4 2" />
+      <path d="M6.3 6.4a1.8 1.8 0 0 1 3.4.7c0 1.2-1.7 1.4-1.7 2.4M8 11.6v.1" />
+    </>
+  ),
+};
+
+function SourceIcon({ kind, grounded }: { kind: string; grounded: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      aria-hidden
+      className={`size-4 shrink-0 ${grounded ? "text-grounded" : "text-simulated"}`}
+      fill={kind === "survey" ? "currentColor" : "none"}
+      stroke={kind === "survey" ? "none" : "currentColor"}
+      strokeWidth="1.3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {ICONS[kind]}
+    </svg>
+  );
+}
+
+/**
  * One row per source, not per claim. Two claims resting on the same survey
  * quote is one source used twice, and listing it twice would read as a fault
  * in the very panel meant to establish that the evidence is handled carefully.
@@ -108,8 +146,9 @@ export function SourceSummary({
           {groups.map((entry) => (
             <li key={entry.key}>
               <p
-                className={`text-[0.75rem] font-medium ${entry.grounded ? "text-grounded" : "text-simulated"}`}
+                className={`flex items-center gap-2 text-[0.75rem] font-medium ${entry.grounded ? "text-grounded" : "text-simulated"}`}
               >
+                <SourceIcon kind={entry.key} grounded={entry.grounded} />
                 {entry.title} · {entry.entries.length}
               </p>
               <ul className="mt-2.5 flex flex-col gap-2.5">
