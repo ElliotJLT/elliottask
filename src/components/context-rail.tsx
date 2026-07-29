@@ -25,7 +25,7 @@ export function ContextRail({
   return (
     <nav
       aria-label="Survey context"
-      className="flex w-[20rem] shrink-0 flex-col border-r border-border bg-surface"
+      className="flex h-full w-[20rem] shrink-0 flex-col border-r border-border bg-surface"
     >
       <div className="shrink-0 px-7 pt-7 pb-6">
         <p className="label">Simulated survey</p>

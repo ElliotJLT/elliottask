@@ -69,7 +69,7 @@ export function RespondentPanel({
           </div>
         ) : null}
 
-        <div className="px-7 py-6">
+        <div className="px-7 py-6 pb-8">
           <p className="label">Profile</p>
           <div className="mt-3">
             <AttributePills persona={persona} />
@@ -80,12 +80,11 @@ export function RespondentPanel({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-border bg-card px-7 py-5">
-        {inInterview ? (
-          <p className="rounded-xl border border-border bg-surface-sunk px-5 py-3.5 text-center text-[0.875rem] font-medium text-ink-muted">
-            Interview in progress
-          </p>
-        ) : conversationId ? (
+      {/* Once the interview is open the record has no action left to offer, so
+          the footer goes rather than standing in the primary slot saying
+          nothing. */}
+      {inInterview || !conversationId ? null : (
+        <div className="shrink-0 border-t border-border bg-card px-7 py-5">
           <Link
             href={`/interviews/${conversationId}`}
             className="group flex items-center justify-between rounded-xl bg-accent px-5 py-3.5 font-medium text-white transition-colors duration-150 hover:bg-[#bd5637]"
@@ -100,13 +99,12 @@ export function RespondentPanel({
               &rarr;
             </span>
           </Link>
-        ) : null}
-        <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-muted">
-          {inInterview
-            ? "Their record stays here while you talk, so every claim can be checked against it."
-            : "Ask why they answered as they did, what would move them, and where their reasoning stops being grounded in data."}
-        </p>
-      </div>
+          <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-muted">
+            Ask why they answered as they did, what would move them, and where
+            their reasoning stops being grounded in data.
+          </p>
+        </div>
+      )}
     </section>
   );
 }

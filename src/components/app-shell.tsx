@@ -64,11 +64,11 @@ export function AppShell({
     <div className="flex h-full">
       <div
         aria-hidden={mode !== "browse"}
-        className={`shrink-0 overflow-hidden transition-[width] ${glide} ${
+        className={`flex h-full shrink-0 overflow-hidden transition-[width] ${glide} ${
           mode === "browse" ? "w-[20rem]" : "w-0"
         }`}
       >
-        <div className="h-full w-[20rem]">
+        <div className="h-full w-[20rem] shrink-0">
           <ContextRail
             data={data}
             muted={muted}
@@ -110,9 +110,9 @@ export function AppShell({
 
         <div
           style={{ width: recordWidth }}
-          className={`shrink-0 overflow-hidden transition-[width] ${glide}`}
+          className={`flex h-full shrink-0 overflow-hidden transition-[width] ${glide}`}
         >
-          <div style={{ width: "31rem" }} className="h-full">
+          <div style={{ width: "31rem" }} className="h-full shrink-0">
             {focus ? (
               <RespondentPanel
                 persona={focus.persona}
@@ -129,8 +129,8 @@ export function AppShell({
             rewraps while the column opens. Absent entirely until then, or its
             fixed inner width would claim space the society still needs. */}
         {mode === "interview" ? (
-          <div className="min-w-0 flex-1 overflow-hidden">
-            <div className="h-full w-[calc(100vw-31rem)]">{children}</div>
+          <div className="flex h-full min-w-0 flex-1 overflow-hidden">
+            <div className="h-full w-[calc(100vw-31rem)] shrink-0">{children}</div>
           </div>
         ) : null}
       </div>
