@@ -1,13 +1,16 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { society } from "@/lib/graph";
+import { readTranscript, subscribe } from "@/lib/transcript-store";
+import { getSourcesOpen, setSourcesOpen, subscribeUi } from "@/lib/ui-store";
 import type { ShellData } from "@/lib/shell-data";
 import { ContextRail } from "./context-rail";
 import { countInView, type Filters } from "./filter-bar";
 import { RespondentPanel } from "./respondent-panel";
 import { SocietyPanel } from "./society-panel";
+import { SourceSummary } from "./source-summary";
 
 /**
  * Three steps, in the order the work actually happens. Browse the society,
@@ -27,6 +30,11 @@ export function AppShell({
   const [muted, setMuted] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({});
   const [recordOpen, setRecordOpen] = useState(true);
+  const sourcesOpen = useSyncExternalStore(
+    subscribeUi,
+    getSourcesOpen,
+    () => false,
+  );
 
   const segments = pathname.split("/").filter(Boolean);
   const mode: "browse" | "record" | "interview" =
@@ -51,6 +59,18 @@ export function AppShell({
 
   const openRecord = (personaId: string) =>
     router.push(`/respondents/${personaId}`);
+
+  const openConversationId =
+    mode === "interview" ? (segments[1] ?? null) : null;
+  const seed = openConversationId
+    ? (data.transcripts[openConversationId] ?? { messages: [], citations: [] })
+    : { messages: [], citations: [] };
+  const transcript = useSyncExternalStore(
+    subscribe,
+    () => (openConversationId ? readTranscript(openConversationId, seed) : seed),
+    () => seed,
+  );
+  const showSources = mode === "interview" && sourcesOpen;
 
   const glide = "duration-[380ms] ease-[cubic-bezier(0.32,0.72,0,1)]";
 
@@ -138,7 +158,13 @@ export function AppShell({
           <div className="relative flex h-full min-w-0 flex-1 overflow-hidden">
             <div
               className={`h-full shrink-0 overflow-hidden rounded-2xl border border-border ${
-                recordOpen ? "w-[calc(100vw-28.5rem)]" : "w-[calc(100vw-1.5rem)]"
+                recordOpen
+                  ? showSources
+                    ? "w-[calc(100vw-50rem)]"
+                    : "w-[calc(100vw-28.5rem)]"
+                  : showSources
+                    ? "w-[calc(100vw-23rem)]"
+                    : "w-[calc(100vw-1.5rem)]"
               }`}
             >
               {children}
@@ -159,6 +185,23 @@ export function AppShell({
                 className="h-9 w-1 rounded-full bg-border-strong transition-all duration-150 group-hover:h-12 group-hover:bg-accent"
               />
             </button>
+          </div>
+        ) : null}
+
+        {/* Sources sit beside the transcript rather than inside it, so the
+            evidence is a component of the workspace in its own right. */}
+        {mode === "interview" ? (
+          <div
+            className={`h-full shrink-0 overflow-hidden transition-[width] ${glide} ${
+              showSources ? "w-[21.5rem]" : "-ml-3 w-0"
+            }`}
+          >
+            <div className="h-full w-[21.5rem] overflow-hidden rounded-2xl border border-border">
+              <SourceSummary
+                citations={transcript.citations}
+                onClose={() => setSourcesOpen(false)}
+              />
+            </div>
           </div>
         ) : null}
       </div>

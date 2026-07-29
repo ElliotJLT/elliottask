@@ -1,4 +1,5 @@
 import {
+  getCitations,
   getConversationForPersona,
   getMessages,
   getPersona,
@@ -10,7 +11,14 @@ import {
   listStartedConversations,
   type OptionShare,
 } from "./store";
-import type { Insight, Persona, Survey, SurveyResponse } from "./types";
+import type {
+  Citation,
+  Insight,
+  Message,
+  Persona,
+  Survey,
+  SurveyResponse,
+} from "./types";
 
 export interface ShellRespondent {
   persona: Persona;
@@ -33,6 +41,7 @@ export interface ShellData {
   insights: Insight[];
   respondents: ShellRespondent[];
   saved: ShellSaved[];
+  transcripts: Record<string, { messages: Message[]; citations: Citation[] }>;
 }
 
 /** Everything the persistent shell needs, on every route. */
@@ -52,6 +61,21 @@ export function getShellData(): ShellData {
           : false,
       };
     }),
+    transcripts: Object.fromEntries(
+      listPersonas()
+        .map((persona) => getConversationForPersona(persona.id))
+        .filter((conversation) => conversation !== undefined)
+        .map((conversation) => {
+          const messages = getMessages(conversation.id);
+          return [
+            conversation.id,
+            {
+              messages,
+              citations: messages.flatMap((message) => getCitations(message.id)),
+            },
+          ];
+        }),
+    ),
     saved: listStartedConversations().map((conversation) => ({
       conversationId: conversation.id,
       personaName: getPersona(conversation.personaId)?.name ?? "Unknown",

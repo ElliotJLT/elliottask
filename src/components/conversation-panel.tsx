@@ -11,8 +11,8 @@ import {
   type Transcript,
 } from "@/lib/transcript-store";
 import type { Citation, Message, Persona, SurveyResponse } from "@/lib/types";
+import { getSourcesOpen, setSourcesOpen, subscribeUi } from "@/lib/ui-store";
 import { MessageThread, ThinkingRow } from "./message-thread";
-import { SourceSummary } from "./source-summary";
 
 /**
  * The interview. By this point the respondent has been read and chosen, so the
@@ -43,7 +43,11 @@ export function ConversationPanel({
   );
   const [draft, setDraft] = useState("");
   const [waiting, setWaiting] = useState(false);
-  const [showSources, setShowSources] = useState(false);
+  const showSources = useSyncExternalStore(
+    subscribeUi,
+    getSourcesOpen,
+    () => false,
+  );
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -109,7 +113,7 @@ export function ConversationPanel({
           <div className="relative shrink-0">
           <button
             type="button"
-            onClick={() => setShowSources((open) => !open)}
+            onClick={() => setSourcesOpen(!showSources)}
             aria-expanded={showSources}
             className={`flex shrink-0 items-center gap-2 rounded-lg border px-3 py-1.5 text-[0.8125rem] font-medium transition-colors duration-150 ${
               showSources
@@ -141,7 +145,6 @@ export function ConversationPanel({
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1">
       <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8">
         <div className={`mx-auto max-w-[42rem] ${transcript.messages.length === 0 && !waiting ? "flex min-h-full flex-col justify-center" : ""}`}>
           {transcript.messages.length === 0 && !waiting ? (
@@ -184,7 +187,7 @@ export function ConversationPanel({
                 personaName={persona.name}
                 personaId={persona.id}
                 choice={response?.choice ?? ""}
-                onViewSources={() => setShowSources(true)}
+                onViewSources={() => setSourcesOpen(true)}
               />
               {waiting ? (
                 <ol className="mt-7">
@@ -198,20 +201,6 @@ export function ConversationPanel({
             </>
           )}
           <div ref={endRef} />
-        </div>
-      </div>
-
-        <div
-          className={`shrink-0 overflow-hidden border-l border-border transition-[width] duration-[300ms] ease-[cubic-bezier(0.32,0.72,0,1)] ${
-            showSources ? "w-[21rem]" : "w-0"
-          }`}
-        >
-          <div className="h-full w-[21rem]">
-            <SourceSummary
-              citations={transcript.citations}
-              onClose={() => setShowSources(false)}
-            />
-          </div>
         </div>
       </div>
 
