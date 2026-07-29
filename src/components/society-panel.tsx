@@ -34,9 +34,9 @@ export function SocietyPanel({
 
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card">
-      <header className="flex shrink-0 items-start justify-between gap-8 border-b border-border px-6 py-4">
+      <header className="flex h-[4.75rem] shrink-0 items-center justify-between gap-8 border-b border-border px-6">
         <div
-          className={`flex min-w-0 gap-4 ${compact ? "flex-col items-start" : "items-start"}`}
+          className="flex min-w-0 items-center gap-3"
         >
           {focused ? (
             <Link
@@ -60,16 +60,16 @@ export function SocietyPanel({
             </Link>
           ) : null}
 
-          <div className="min-w-0">
-            <p className="label">{focused ? "Neighbourhood" : "The society"}</p>
-            <p
-              className={`mt-1.5 max-w-xl text-[0.8125rem] leading-relaxed text-ink-muted ${compact ? "hidden" : ""}`}
-            >
+          <p className="min-w-0 truncate">
+            <span className="text-[0.9375rem] font-medium text-ink">
+              {focused ? "Neighbourhood" : "The society"}
+            </span>
+            <span className="ml-2 text-[0.8125rem] text-ink-muted">
               {focused
-                ? `${focusName} and the respondents whose views reach theirs. The rest of the society is behind them.`
-                : `${shownCount} of ${populationCount} respondents in view. Each dot is one person, drawn toward the others who answered as they did. Select a lit one to interview.`}
-            </p>
-          </div>
+                ? `${focusName} and the respondents whose views reach theirs`
+                : `${shownCount} of ${populationCount} in view · select a lit respondent to interview`}
+            </span>
+          </p>
         </div>
 
         <div className={`shrink-0 ${focused ? "hidden" : ""}`}>
