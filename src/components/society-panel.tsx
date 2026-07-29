@@ -32,7 +32,7 @@ export function SocietyPanel({
   const focused = Boolean(focusPersonaId);
 
   return (
-    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[0_1px_2px_rgba(29,27,23,0.04)]">
+    <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card">
       <header className="flex shrink-0 items-start justify-between gap-8 border-b border-border px-6 py-4">
         <div
           className={`flex min-w-0 gap-4 ${compact ? "flex-col items-start" : "items-start"}`}

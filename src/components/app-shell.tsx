@@ -61,14 +61,14 @@ export function AppShell({
   const societyCap = mode === "interview" ? "0px" : "200vw";
 
   return (
-    <div className="flex h-full">
+    <div className="flex h-full gap-3 bg-surface p-3">
       <div
         aria-hidden={mode !== "browse"}
         className={`flex h-full shrink-0 overflow-hidden transition-[width] ${glide} ${
-          mode === "browse" ? "w-[20rem]" : "w-0"
+          mode === "browse" ? "w-[20rem]" : "-mr-3 w-0"
         }`}
       >
-        <div className="h-full w-[20rem] shrink-0">
+        <div className="h-full w-[20rem] shrink-0 overflow-hidden rounded-2xl border border-border">
           <ContextRail
             data={data}
             muted={muted}
@@ -87,11 +87,11 @@ export function AppShell({
         </div>
       </div>
 
-      <div className="flex min-w-0 flex-1">
+      <div className="flex min-w-0 flex-1 gap-3">
         <div
           style={{ maxWidth: societyCap }}
           className={`min-w-0 flex-1 overflow-hidden transition-[max-width,opacity] ${glide} ${
-            mode === "interview" ? "p-0 opacity-0 duration-150" : "p-5 opacity-100"
+            mode === "interview" ? "-mr-3 opacity-0 duration-150" : "opacity-100"
           }`}
         >
           <SocietyPanel
@@ -112,7 +112,7 @@ export function AppShell({
           style={{ width: recordWidth }}
           className={`flex h-full shrink-0 overflow-hidden transition-[width] ${glide}`}
         >
-          <div style={{ width: "31rem" }} className="h-full shrink-0">
+          <div style={{ width: "31rem" }} className="h-full shrink-0 overflow-hidden rounded-2xl border border-border">
             {focus ? (
               <RespondentPanel
                 persona={focus.persona}
@@ -130,7 +130,9 @@ export function AppShell({
             fixed inner width would claim space the society still needs. */}
         {mode === "interview" ? (
           <div className="flex h-full min-w-0 flex-1 overflow-hidden">
-            <div className="h-full w-[calc(100vw-31rem)] shrink-0">{children}</div>
+            <div className="h-full w-[calc(100vw-33.5rem)] shrink-0 overflow-hidden rounded-2xl border border-border">
+              {children}
+            </div>
           </div>
         ) : null}
       </div>

@@ -29,7 +29,7 @@ export function RespondentPanel({
   return (
     <section
       aria-label={`Respondent record for ${persona.name}`}
-      className="flex h-full w-full flex-col border-l border-border bg-surface"
+      className="flex h-full w-full flex-col bg-card"
     >
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className="flex h-[4.75rem] shrink-0 items-center gap-3 border-b border-border bg-card px-7">
