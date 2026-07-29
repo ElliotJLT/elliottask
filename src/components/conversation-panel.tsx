@@ -14,7 +14,7 @@ import {
 } from "@/lib/transcript-store";
 import type { Citation, Message, Persona, SurveyResponse } from "@/lib/types";
 import { setSourcesOpen } from "@/lib/ui-store";
-import { InvitePicker } from "./invite-picker";
+import { ComposerPlusMenu } from "./composer-menu";
 import { MessageThread, ThinkingRow } from "./message-thread";
 import { PersonaMark } from "./persona-mark";
 
@@ -231,7 +231,7 @@ export function ConversationPanel({
               ask(draft);
             }}
           >
-            <div className="flex items-end gap-3 rounded-xl border border-border bg-surface px-4 py-3 focus-within:border-border-strong">
+            <div className="rounded-2xl border border-border bg-surface px-3 pt-3 pb-2 focus-within:border-border-strong">
               <textarea
                 value={draft}
                 onChange={(event) => setDraft(event.target.value)}
@@ -244,21 +244,38 @@ export function ConversationPanel({
                 rows={1}
                 placeholder={`Ask ${firstName} about their answer`}
                 aria-label={`Ask ${firstName} a question`}
-                className="max-h-32 min-h-[1.5rem] flex-1 resize-none bg-transparent text-[0.9375rem] leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none"
+                className="block max-h-32 min-h-[1.5rem] w-full resize-none bg-transparent px-1 text-[0.9375rem] leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none"
               />
-              <button
-                type="submit"
-                disabled={!draft.trim() || waiting}
-                className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-[#bd5637] disabled:cursor-not-allowed disabled:bg-border-strong"
-              >
-                Ask
-              </button>
-            </div>
 
-            {/* Group interview lives with the composer: the picker that would
-                bring another respondent or a survey segment into the thread. */}
-            <div className="mt-2.5 flex items-center gap-2">
-              <InvitePicker current={persona} />
+              {/* Composer toolbar: add lives in the plus menu on the left,
+                  send on the right, with a couple of controls the product would
+                  grow into kept present but inert. */}
+              <div className="mt-1.5 flex items-center gap-1">
+                <ComposerPlusMenu current={persona} />
+                <div className="flex-1" />
+                <button
+                  type="button"
+                  disabled
+                  aria-label="Voice input"
+                  title="Voice input"
+                  className="flex size-8 items-center justify-center rounded-lg text-ink-muted opacity-45"
+                >
+                  <svg viewBox="0 0 16 16" aria-hidden className="size-[1.125rem]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="6" y="2" width="4" height="7" rx="2" />
+                    <path d="M4 7.5a4 4 0 0 0 8 0M8 11.5V14" />
+                  </svg>
+                </button>
+                <button
+                  type="submit"
+                  disabled={!draft.trim() || waiting}
+                  aria-label="Send"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-white transition-colors duration-150 hover:bg-[#bd5637] disabled:cursor-not-allowed disabled:bg-border-strong"
+                >
+                  <svg viewBox="0 0 16 16" aria-hidden className="size-4" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M8 12.5v-9M4.5 7 8 3.5 11.5 7" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </form>
 
