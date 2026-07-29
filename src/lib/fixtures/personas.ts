@@ -11,7 +11,7 @@ export const personas: Persona[] = [
     generation: "Millennial",
     seniority: "Executive Level",
     industry: "Technology",
-    avatarUrl: null,
+    avatarUrl: "/avatars/per_zuckerberg.jpg",
   },
   {
     id: "per_sharma",
@@ -23,7 +23,7 @@ export const personas: Persona[] = [
     generation: "Millennial",
     seniority: "Executive Level",
     industry: "Financial Services",
-    avatarUrl: null,
+    avatarUrl: "/avatars/per_sharma.jpg",
   },
   {
     id: "per_osei",
@@ -35,7 +35,7 @@ export const personas: Persona[] = [
     generation: "Millennial",
     seniority: "Executive Level",
     industry: "Technology",
-    avatarUrl: null,
+    avatarUrl: "/avatars/per_osei.jpg",
   },
   {
     id: "per_chen",
@@ -47,7 +47,7 @@ export const personas: Persona[] = [
     generation: "Gen X",
     seniority: "Executive Level",
     industry: "Venture Capital",
-    avatarUrl: null,
+    avatarUrl: "/avatars/per_chen.jpg",
   },
   {
     id: "per_lindqvist",
@@ -59,7 +59,7 @@ export const personas: Persona[] = [
     generation: "Gen X",
     seniority: "Executive Level",
     industry: "Financial Services",
-    avatarUrl: null,
+    avatarUrl: "/avatars/per_lindqvist.jpg",
   },
   {
     id: "per_moreau",
@@ -71,6 +71,6 @@ export const personas: Persona[] = [
     generation: "Millennial",
     seniority: "Senior Level",
     industry: "IT Services and IT Consulting",
-    avatarUrl: null,
+    avatarUrl: "/avatars/per_moreau.jpg",
   },
 ];
