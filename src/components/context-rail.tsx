@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useSyncExternalStore } from "react";
-import { formatDay, formatTime, stripMarkers } from "@/lib/format";
+import { useState, useSyncExternalStore } from "react";
+import { stripMarkers } from "@/lib/format";
 import type { ShellConversation, ShellData } from "@/lib/shell-data";
 import {
   clearTranscript,
@@ -100,6 +100,56 @@ function StatusBadge({ status }: { status: ShellConversation["status"] }) {
 }
 
 /**
+ * A rail section that folds. The header is always a slim bar so a collapsed
+ * section costs one line; the body is the section's own content when open. Every
+ * section here can close because the rail carries reference a researcher dips
+ * into, not content they read top to bottom.
+ */
+function RailSection({
+  title,
+  count,
+  open,
+  onToggle,
+  action,
+  children,
+}: {
+  title: string;
+  count?: number;
+  open: boolean;
+  onToggle: () => void;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="border-t border-border">
+      <div className="flex items-center gap-2 pr-5">
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          className="flex flex-1 items-center gap-2 py-3.5 pl-7 text-left"
+        >
+          <span className="label">{title}</span>
+          {count != null && count > 0 ? (
+            <span className="rounded-full bg-surface-sunk px-1.5 text-[0.6875rem] font-medium text-ink-muted tabular-nums">
+              {count}
+            </span>
+          ) : null}
+          <span
+            aria-hidden
+            className={`ml-auto text-ink-muted transition-transform duration-200 ${open ? "" : "-rotate-90"}`}
+          >
+            &#8964;
+          </span>
+        </button>
+        {open ? action : null}
+      </div>
+      {open ? <div className="px-7 pt-1 pb-6">{children}</div> : null}
+    </div>
+  );
+}
+
+/**
  * The context column. It holds the same four things in both modes, so moving
  * into an interview never rearranges the furniture.
  */
@@ -143,6 +193,14 @@ export function ContextRail({
     router.push(`/interviews/${conversationId}`);
   };
 
+  const [open, setOpen] = useState({
+    result: true,
+    insights: false,
+    recent: true,
+  });
+  const toggle = (key: keyof typeof open) =>
+    setOpen((current) => ({ ...current, [key]: !current[key] }));
+
   return (
     <nav
       aria-label="Survey context"
@@ -160,21 +218,23 @@ export function ContextRail({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="border-t border-border px-7 py-6">
-          <div className="flex items-baseline justify-between">
-            <p className="label">Result</p>
-            {muted.length > 0 ? (
+        <RailSection
+          title="Result"
+          open={open.result}
+          onToggle={() => toggle("result")}
+          action={
+            muted.length > 0 ? (
               <button
                 type="button"
                 onClick={onShowAll}
-                className="text-[0.75rem] font-medium text-accent"
+                className="shrink-0 text-[0.75rem] font-medium text-accent"
               >
                 Show all
               </button>
-            ) : null}
-          </div>
-
-          <ul className="mt-4 flex flex-col gap-1">
+            ) : null
+          }
+        >
+          <ul className="flex flex-col gap-1">
             {data.results.map((result) => {
               const off = muted.includes(result.option);
               return (
@@ -207,11 +267,14 @@ export function ContextRail({
               );
             })}
           </ul>
-        </div>
+        </RailSection>
 
-        <div className="border-t border-border px-7 py-6">
-          <p className="label">What the result says</p>
-          <ul className="mt-4 flex flex-col gap-6">
+        <RailSection
+          title="What the result says"
+          open={open.insights}
+          onToggle={() => toggle("insights")}
+        >
+          <ul className="flex flex-col gap-6">
             {data.insights.map((insight) => (
               <li key={insight.id}>
                 {insight.stat ? (
@@ -230,30 +293,33 @@ export function ContextRail({
               </li>
             ))}
           </ul>
-        </div>
+        </RailSection>
 
         {recent.length > 0 ? (
-          <div className="border-t border-border px-7 py-6">
-            <p className="label">Recent interviews</p>
-            <ul className="mt-3 flex flex-col gap-2.5">
+          <RailSection
+            title="Recent interviews"
+            count={recent.length}
+            open={open.recent}
+            onToggle={() => toggle("recent")}
+          >
+            {/* A list of chats: click a row to resume, the restart on hover to
+                start it over. Kept to one respondent, one status, one line of
+                the last thing said. */}
+            <ul className="-mx-2 flex flex-col">
               {recent.map((item) => {
                 const active = item.conversationId === activeConversationId;
                 return (
                   <li key={item.conversationId}>
-                    <div
-                      className={`group rounded-xl border px-3 py-3 transition-colors duration-150 ${
-                        active
-                          ? "border-border-strong bg-surface-sunk"
-                          : "border-border hover:border-border-strong"
-                      }`}
-                    >
+                    <div className="group relative">
                       <button
                         type="button"
                         onClick={() =>
                           router.push(`/interviews/${item.conversationId}`)
                         }
                         aria-current={active ? "page" : undefined}
-                        className="flex w-full gap-3 text-left"
+                        className={`flex w-full items-start gap-2.5 rounded-lg px-2 py-2 text-left transition-colors duration-150 ${
+                          active ? "bg-surface-sunk" : "hover:bg-surface-sunk"
+                        }`}
                       >
                         <PersonaMark
                           name={item.personaName}
@@ -268,41 +334,40 @@ export function ContextRail({
                             </span>
                             <StatusBadge status={item.status} />
                           </span>
-                          <span className="mt-1 line-clamp-2 block text-[0.8125rem] leading-snug text-ink-muted">
+                          <span className="mt-0.5 block truncate pr-6 text-[0.75rem] text-ink-muted">
                             {item.fromPersona ? "" : "You: "}
                             {item.preview}
-                          </span>
-                          <span className="mt-1 block text-[0.6875rem] text-ink-muted tabular-nums">
-                            {formatDay(item.at)} · {formatTime(item.at)}
                           </span>
                         </span>
                       </button>
 
-                      <div className="mt-2.5 flex items-center gap-2 pl-11">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            router.push(`/interviews/${item.conversationId}`)
-                          }
-                          className="rounded-md bg-accent px-2.5 py-1 text-[0.75rem] font-medium text-white transition-colors duration-150 hover:bg-[#bd5637]"
+                      <button
+                        type="button"
+                        onClick={() => startNew(item.conversationId)}
+                        title="Start new — clear this thread and begin again"
+                        aria-label="Start new interview"
+                        className="absolute right-1.5 bottom-1.5 flex size-6 items-center justify-center rounded-md text-ink-muted opacity-0 transition-all duration-150 hover:bg-card hover:text-ink group-hover:opacity-100"
+                      >
+                        <svg
+                          viewBox="0 0 16 16"
+                          aria-hidden
+                          className="size-3.5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         >
-                          Resume
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => startNew(item.conversationId)}
-                          title="Clear this thread and start over with the same respondent"
-                          className="rounded-md border border-border px-2.5 py-1 text-[0.75rem] font-medium text-ink-muted transition-colors duration-150 hover:border-border-strong hover:text-ink"
-                        >
-                          Start new
-                        </button>
-                      </div>
+                          <path d="M12.8 6.6A4.6 4.6 0 1 0 13 9" />
+                          <path d="M13 3v3.6h-3.6" />
+                        </svg>
+                      </button>
                     </div>
                   </li>
                 );
               })}
             </ul>
-          </div>
+          </RailSection>
         ) : null}
       </div>
     </nav>
