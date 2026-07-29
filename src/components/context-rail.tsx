@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore } from "react";
 import { stripMarkers } from "@/lib/format";
@@ -110,6 +111,7 @@ function RailSection({
   open,
   onToggle,
   action,
+  fill = false,
   children,
 }: {
   title: string;
@@ -117,11 +119,17 @@ function RailSection({
   open: boolean;
   onToggle: () => void;
   action?: React.ReactNode;
+  /** When open, take the leftover height and scroll internally, so the
+   *  sections below it stay pinned in view instead of being pushed off. */
+  fill?: boolean;
   children: React.ReactNode;
 }) {
+  const filling = fill && open;
   return (
-    <div className="border-t border-border">
-      <div className="flex items-center gap-2 pr-5">
+    <div
+      className={`border-t border-border ${filling ? "flex min-h-0 flex-1 flex-col" : ""}`}
+    >
+      <div className="flex shrink-0 items-center gap-2 pr-5">
         <button
           type="button"
           onClick={onToggle}
@@ -143,7 +151,13 @@ function RailSection({
         </button>
         {open ? action : null}
       </div>
-      {open ? <div className="px-7 pt-0.5 pb-5">{children}</div> : null}
+      {open ? (
+        <div
+          className={`px-7 pt-0.5 pb-5 ${filling ? "min-h-0 flex-1 overflow-y-auto" : ""}`}
+        >
+          {children}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -189,8 +203,8 @@ export function ContextRail({
 
   const [open, setOpen] = useState({
     result: true,
-    insights: false,
-    recent: true,
+    insights: true,
+    recent: false,
   });
   const toggle = (key: keyof typeof open) =>
     setOpen((current) => ({ ...current, [key]: !current[key] }));
@@ -201,7 +215,17 @@ export function ContextRail({
       className="flex h-full w-full flex-col bg-card"
     >
       <div className="shrink-0 px-7 pt-6 pb-5">
-        <p className="label">Simulated survey</p>
+        <div className="flex items-center gap-2.5">
+          <Image
+            src="/artificial-societies.jpeg"
+            alt="Artificial Societies"
+            width={80}
+            height={80}
+            className="h-5 w-auto"
+            priority
+          />
+          <p className="label">Simulated survey</p>
+        </div>
         <h1 className="mt-2 text-[1.0625rem] leading-snug font-medium text-ink">
           {data.survey.question}
         </h1>
@@ -211,7 +235,7 @@ export function ContextRail({
         </p>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="flex min-h-0 flex-1 flex-col">
         <RailSection
           title="Result"
           open={open.result}
@@ -267,21 +291,22 @@ export function ContextRail({
           title="What the result says"
           open={open.insights}
           onToggle={() => toggle("insights")}
+          fill
         >
-          <ul className="flex flex-col gap-5">
+          <ul className="flex flex-col gap-4">
             {data.insights.map((insight) => (
               <li key={insight.id}>
                 {insight.stat ? (
-                  <p className="text-[1.75rem] leading-none font-medium text-ink tabular-nums">
+                  <p className="text-[1.5rem] leading-none font-medium text-ink tabular-nums">
                     {insight.stat}
                   </p>
                 ) : null}
                 <h3
-                  className={`text-[0.9375rem] leading-snug font-medium text-ink ${insight.stat ? "mt-2" : ""}`}
+                  className={`text-[0.9375rem] leading-snug font-medium text-ink ${insight.stat ? "mt-1.5" : ""}`}
                 >
                   {insight.headline}
                 </h3>
-                <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-ink-muted">
+                <p className="mt-1 text-[0.8125rem] leading-snug text-ink-muted">
                   {insight.detail}
                 </p>
               </li>
