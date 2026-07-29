@@ -88,20 +88,20 @@ export function RespondentPanel({
                 </p>
               </>
             )}
+            <div className="mt-4">
+              <ProvenanceNote name={firstName} />
+            </div>
           </div>
         ) : null}
 
-        <FindingsSection activeConversationId={activeConversationId} />
-
-        <div className="px-6 py-6 pb-8">
+        <div className="border-b border-border px-6 py-6">
           <p className="label">Profile</p>
           <div className="mt-3">
             <AttributePills persona={persona} />
           </div>
-          <div className="mt-6">
-            <ProvenanceNote name={firstName} />
-          </div>
         </div>
+
+        <FindingsSection activeConversationId={activeConversationId} />
       </div>
 
       {/* Once the interview is open the record has no action left to offer, so
