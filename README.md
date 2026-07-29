@@ -11,7 +11,7 @@ The old chat works. Clients don't trust it and can't tell what it's for, which a
 | What clients said | What's actually wrong | What's built |
 |---|---|---|
 | "I don't know when or why I should use the chats" | The chat opens cold. Its only call to action names the mechanism, not the reason. | Interviews are reached through the population, so you arrive having chosen someone and knowing why. An interview with no messages opens with questions derived from that respondent's own answer, not generic prompts. |
-| "I keep losing my chats after I log off" | No persistence. The chat is a modal over a blurred graph and closing it destroys the session. | Transcripts are written to browser storage and read back through React's external-store API. Refresh the page mid-interview: it's still there. |
+| "I keep losing my chats after I log off" | No persistence. The chat is a modal over a blurred graph and closing it destroys the session. | Transcripts are written to browser storage and read back through React's external-store API, so a refresh mid-interview loses nothing. Every started interview lands in a Recent Interviews list with its last message and status, one click to resume or start fresh. |
 | "I don't know any details about who I'm talking to" | The rich profile sits in the results view and vanishes when the chat opens. | The respondent record sits beside the transcript for the whole conversation, so every claim can be checked against the profile that produced it. |
 | "I don't trust the chat and their responses" | A blanket disclaimer at the top of the thread concedes the problem and manages none of it. | No disclaimer. Claims are marked individually, and the respondent refuses questions it can't answer from data. |
 | "How do I know if what they're saying is backed by real data or just made up?" | Fluent invention and grounded fact look identical. | Every claim carries a marker: solid for grounded in the survey answer or profile, dashed for the model reasoning past both. Sources sit under each reply with the verbatim quote. |
@@ -36,7 +36,17 @@ Two consequences worth looking at:
 
 **The respondent refuses.** Ask about people who weren't surveyed and it says plainly that it would be guessing, then suggests running the question across the population instead. A system with no visible failure states gives no signal worth trusting. It's also the commercially correct answer: the right response to a question one respondent can't answer is another survey.
 
-**Sources are counted.** The pill in the interview header opens a summary of everything the conversation has rested on, split into grounded and extrapolated. Per-claim markers answer "is this sentence evidence". The count answers the question a client carries into a decision, which is how much of the whole conversation was.
+**Sources are counted.** A column beside the transcript collects everything the conversation has rested on, split into grounded and extrapolated. Per-claim markers answer "is this sentence evidence". The column answers the question a client carries into a decision, which is how much of the whole conversation was.
+
+## The work around the chat
+
+A conversation is one moment in a longer job, so the build gives that job somewhere to live.
+
+**Resume, don't restart.** Every interview with messages sits in a Recent Interviews list beside the survey: who, the last thing said, whether it's still going. One click resumes it, another starts it fresh with the same respondent.
+
+**Keep what matters.** Bookmark any reply and it lands in Findings, held with the respondent and its sources across every interview in the project, so research ends somewhere other than a scroll back up the thread.
+
+**Leave with it.** Export a transcript and the provenance travels with it. Each reply carries its grounded quotes and its flagged extrapolations as footnotes, because these end up in decks where the quote and its source have to stay together.
 
 ## Running it
 
@@ -49,17 +59,15 @@ No API keys. The chat is mocked per the brief. Still needs deploying for a submi
 
 ## What I'd do with more time
 
-**Compare two respondents side by side.** The weakest seam in the current flow: the record step decides whether someone is worth interviewing, but you can only look at one at a time, and browsing is fundamentally about choosing between people. Holding the Winter respondent next to the Autumn one, and asking both the same question, is real research behaviour that the current build can't support.
+**Wire up the group interview.** The composer's invite and the map's shift-click both gather a group already. What's missing is the thing they gather toward: putting one question to five respondents across different answers and reading the spread, which is how research actually works and what browsing between people is for. The build stages this and doesn't yet run it. It's also the honest answer to a question one respondent can't give, which is another survey.
+
+**Lean the trust work on the refusal, not the markers.** Every claim carries a grounded or extrapolated marker, on the assumption that marking raises trust. It might not. A dashed marker can read as "made up" rather than "reasoned past the data", and take the whole conversation down with it. The mark that clearly earns its place is the refusal, where the persona won't speak for people who weren't surveyed and points at running another survey, honest and commercially right in one move. I'd make the per-claim marks quieter, put the weight on that moment, and test whether it reads as more trustworthy rather than less.
 
 **Real persistence.** Browser storage answers the complaint but doesn't survive a device change. The domain types in `src/lib/types.ts` are shaped the way the production schema would be, one type per table with references as foreign keys, so the store functions in `src/lib/store.ts` are the seam a real database slots behind.
 
 **The society at full scale.** The graph renders a 250-respondent sample. Three thousand nodes needs aggregation, level-of-detail, and probably canvas rather than SVG. The interface says "a sample" rather than pretending otherwise, which is honest but not a solution.
 
-**Interview more than one respondent at once.** Put the same question to five people across different answers and read the spread. Closer to how a researcher actually works than one conversation at a time.
-
-**Export a transcript with its sources intact.** These conversations end up in decks and board papers. If the provenance doesn't travel with the quote, the trust work stops at the edge of the app.
-
-**Instrument the trust question.** Log whether users expand sources, and whether they ask follow-ups after a refusal or abandon. That tells you if provenance is being used or just displayed.
+**Instrument the trust question.** Log whether users open the sources column, and whether they ask follow-ups after a refusal or abandon. That tells you if provenance is being used or just displayed.
 
 ## Research I'd run
 
