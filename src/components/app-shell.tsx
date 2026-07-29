@@ -156,17 +156,7 @@ export function AppShell({
             fixed inner width would claim space the society still needs. */}
         {mode === "interview" ? (
           <div className="relative flex h-full min-w-0 flex-1 overflow-hidden">
-            <div
-              className={`h-full shrink-0 overflow-hidden rounded-2xl border border-border ${
-                recordOpen
-                  ? showSources
-                    ? "w-[calc(100vw-50rem)]"
-                    : "w-[calc(100vw-28.5rem)]"
-                  : showSources
-                    ? "w-[calc(100vw-23rem)]"
-                    : "w-[calc(100vw-1.5rem)]"
-              }`}
-            >
+            <div className="h-full min-w-0 flex-1 overflow-hidden rounded-2xl border border-border">
               {children}
             </div>
 
@@ -193,13 +183,19 @@ export function AppShell({
         {mode === "interview" ? (
           <div
             className={`h-full shrink-0 overflow-hidden transition-[width] ${glide} ${
-              showSources ? "w-[21.5rem]" : "-ml-3 w-0"
+              showSources ? "w-[21.5rem]" : "w-[3.5rem]"
             }`}
           >
-            <div className="h-full w-[21.5rem] overflow-hidden rounded-2xl border border-border">
+            <div
+              className={`h-full overflow-hidden rounded-2xl border border-border ${
+                showSources ? "w-[21.5rem]" : "w-[3.5rem]"
+              }`}
+            >
               <SourceSummary
                 citations={transcript.citations}
-                onClose={() => setSourcesOpen(false)}
+                collapsed={!showSources}
+                onExpand={() => setSourcesOpen(true)}
+                onCollapse={() => setSourcesOpen(false)}
               />
             </div>
           </div>
