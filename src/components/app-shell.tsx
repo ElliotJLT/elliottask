@@ -2,9 +2,10 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { INDUSTRIES, society } from "@/lib/graph";
+import { society } from "@/lib/graph";
 import type { ShellData } from "@/lib/shell-data";
 import { ContextRail } from "./context-rail";
+import { countInView, type Filters } from "./filter-bar";
 import { RespondentPanel } from "./respondent-panel";
 import { SocietyPanel } from "./society-panel";
 
@@ -24,7 +25,7 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [muted, setMuted] = useState<string[]>([]);
-  const [industries, setIndustries] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filters>({});
 
   const segments = pathname.split("/").filter(Boolean);
   const mode: "browse" | "record" | "interview" =
@@ -45,11 +46,7 @@ export function AppShell({
     .map((result) => result.option)
     .filter((option) => !muted.includes(option));
 
-  const shownCount = society.nodes.filter(
-    (node) =>
-      activeOptions.includes(node.option) &&
-      (industries.length === 0 || industries.includes(node.industry)),
-  ).length;
+  const shownCount = countInView(filters, activeOptions);
 
   const openRecord = (personaId: string) =>
     router.push(`/respondents/${personaId}`);
@@ -103,15 +100,8 @@ export function AppShell({
         >
           <SocietyPanel
             activeOptions={activeOptions}
-            industries={INDUSTRIES}
-            activeIndustries={industries}
-            onToggleIndustry={(industry) =>
-              setIndustries((current) =>
-                current.includes(industry)
-                  ? current.filter((entry) => entry !== industry)
-                  : [...current, industry],
-              )
-            }
+            filters={filters}
+            onFiltersChange={setFilters}
             shownCount={shownCount}
             focusPersonaId={focus?.persona.id ?? null}
             focusName={focus?.persona.name.split(" ")[0] ?? null}

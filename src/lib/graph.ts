@@ -1,11 +1,24 @@
 import { getResults, listPersonas, getResponse, getOptionIndex } from "./store";
 
-export const INDUSTRIES = [
-  "Technology",
-  "Financial Services",
-  "Venture Capital",
-  "IT Services",
-] as const;
+export const FACETS = [
+  {
+    key: "industry" as const,
+    label: "Industry",
+    values: ["Technology", "Financial Services", "Venture Capital", "IT Services"],
+  },
+  {
+    key: "seniority" as const,
+    label: "Seniority",
+    values: ["Executive Level", "Senior Level", "Mid-level"],
+  },
+  {
+    key: "generation" as const,
+    label: "Generation",
+    values: ["Millennial", "Gen X", "Gen Z"],
+  },
+];
+
+export type FacetKey = (typeof FACETS)[number]["key"];
 
 export interface GraphNode {
   id: string;
@@ -13,6 +26,8 @@ export interface GraphNode {
   y: number;
   option: string;
   industry: string;
+  seniority: string;
+  generation: string;
   /** Set for respondents whose full profile is loaded and interviewable. */
   personaId: string | null;
 }
@@ -113,10 +128,14 @@ export function buildSociety(): SocietyLayout {
       const loaded = personaId
         ? listPersonas().find((entry) => entry.id === personaId)
         : undefined;
-      const industry = loaded
-        ? (INDUSTRIES.find((name) => loaded.industry.startsWith(name)) ??
-          INDUSTRIES[0])
-        : INDUSTRIES[Math.floor(random() * INDUSTRIES.length)];
+      const pick = (key: FacetKey, own: string | undefined) => {
+        const values = FACETS.find((facet) => facet.key === key)!.values;
+        const match = own && values.find((value) => own.startsWith(value));
+        return match ?? values[Math.floor(random() * values.length)];
+      };
+      const industry = pick("industry", loaded?.industry);
+      const seniority = pick("seniority", loaded?.seniority);
+      const generation = pick("generation", loaded?.generation);
 
       nodes.push({
         id: `nod_${result.option}_${i}`,
@@ -124,6 +143,8 @@ export function buildSociety(): SocietyLayout {
         y,
         option: result.option,
         industry,
+        seniority,
+        generation,
         personaId,
       });
     }

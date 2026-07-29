@@ -38,14 +38,20 @@ export function RespondentPanel({
               href="/"
               aria-label="Back to all respondents"
               title="All respondents"
-              className="group flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-ink-muted transition-colors duration-150 hover:border-accent hover:text-accent"
+              className="group flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-ink-muted transition-colors duration-150 hover:border-border-strong hover:bg-surface-sunk hover:text-ink"
             >
-              <span
+              <svg
+                viewBox="0 0 16 16"
                 aria-hidden
-                className="text-[0.9375rem] leading-none transition-transform duration-150 group-hover:-translate-x-0.5"
+                className="size-4 transition-transform duration-150 group-hover:-translate-x-0.5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                &larr;
-              </span>
+                <path d="M9.5 3.5 5 8l4.5 4.5" />
+              </svg>
             </Link>
           ) : null}
           <PersonaMark
