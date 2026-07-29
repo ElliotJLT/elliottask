@@ -112,6 +112,22 @@ body {
   }
 }
 
+/* A rating registers with a small pop rather than a silent state flip. */
+@keyframes thumb-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.35);
+  }
+  70% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* The interview arrives whole rather than growing into place. */
 @keyframes panel-rise {
   from {

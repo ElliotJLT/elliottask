@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { formatTime, stripMarkers } from "@/lib/format";
 import {
   findingIdFor,
@@ -64,6 +64,76 @@ function ActionButton({
  * project's findings. Saving is the one that persists, since a finding is the
  * durable artefact; the rest are lightweight and live for the session.
  */
+const DOWN_REASONS = [
+  "Out of date",
+  "Inaccurate",
+  "Wrong sources",
+  "Too long",
+  "Too short",
+  "Other…",
+];
+
+/** The reason box a thumbs-down opens, so the rating can carry a why. */
+function FeedbackBox({
+  selected,
+  onToggle,
+  onClose,
+}: {
+  selected: string[];
+  onToggle: (reason: string) => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="absolute bottom-full left-0 z-30 mb-2 w-[22rem] animate-[fade-in_120ms_ease-out] rounded-xl border border-border bg-card p-3.5 shadow-[0_16px_40px_-12px_rgba(29,27,23,0.28)]">
+      <div className="flex items-start justify-between gap-3">
+        <p className="text-[0.8125rem] font-medium text-ink">
+          What didn&apos;t work about this reply?{" "}
+          <span className="font-normal text-ink-muted">(optional)</span>
+        </p>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="flex size-5 shrink-0 items-center justify-center rounded-md text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
+        >
+          <svg
+            viewBox="0 0 16 16"
+            aria-hidden
+            className="size-3"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          >
+            <path d="M4 4l8 8M12 4l-8 8" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {DOWN_REASONS.map((reason) => {
+          const on = selected.includes(reason);
+          return (
+            <button
+              key={reason}
+              type="button"
+              onClick={() => onToggle(reason)}
+              aria-pressed={on}
+              className={`rounded-lg border px-3 py-1.5 text-[0.8125rem] transition-colors duration-150 ${
+                on
+                  ? "border-accent bg-accent-soft text-ink"
+                  : "border-border text-ink-muted hover:border-border-strong hover:text-ink"
+              }`}
+            >
+              {reason}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function MessageActions({
   message,
   citations,
@@ -81,12 +151,45 @@ function MessageActions({
 }) {
   const [vote, setVote] = useState<Vote>(null);
   const [copied, setCopied] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [reasons, setReasons] = useState<string[]>([]);
+  // Ticks bump on each click so the pop replays; kept per thumb so only the
+  // one pressed animates, and never on first render.
+  const [upTick, setUpTick] = useState(0);
+  const [downTick, setDownTick] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
 
   const saved = useSyncExternalStore(
     subscribeFindings,
     () => isSaved(message.id),
     () => false,
   );
+
+  useEffect(() => {
+    if (!feedbackOpen) return;
+    const onDown = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setFeedbackOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [feedbackOpen]);
+
+  const rateUp = () => {
+    setUpTick((tick) => tick + 1);
+    setVote((current) => (current === "up" ? null : "up"));
+    setFeedbackOpen(false);
+  };
+
+  const rateDown = () => {
+    setDownTick((tick) => tick + 1);
+    setVote((current) => {
+      const next = current === "down" ? null : "down";
+      setFeedbackOpen(next === "down");
+      return next;
+    });
+  };
 
   const copy = async () => {
     try {
@@ -111,21 +214,41 @@ function MessageActions({
     });
   };
 
+  const pop = "inline-flex animate-[thumb-pop_360ms_ease-out]";
+
   return (
-    <div className="mt-2 ml-[2.625rem] flex items-center gap-1">
+    <div ref={ref} className="relative mt-2 ml-[2.625rem] flex items-center gap-1">
+      {feedbackOpen ? (
+        <FeedbackBox
+          selected={reasons}
+          onClose={() => setFeedbackOpen(false)}
+          onToggle={(reason) =>
+            setReasons((current) =>
+              current.includes(reason)
+                ? current.filter((entry) => entry !== reason)
+                : [...current, reason],
+            )
+          }
+        />
+      ) : null}
+
       <ActionButton
         label={vote === "up" ? "Rated helpful" : "Helpful"}
         active={vote === "up"}
-        onClick={() => setVote((v) => (v === "up" ? null : "up"))}
+        onClick={rateUp}
       >
-        <ThumbIcon />
+        <span key={upTick} className={upTick > 0 ? pop : "inline-flex"}>
+          <ThumbIcon />
+        </span>
       </ActionButton>
       <ActionButton
         label={vote === "down" ? "Rated unhelpful" : "Not helpful"}
         active={vote === "down"}
-        onClick={() => setVote((v) => (v === "down" ? null : "down"))}
+        onClick={rateDown}
       >
-        <ThumbIcon down />
+        <span key={downTick} className={downTick > 0 ? pop : "inline-flex"}>
+          <ThumbIcon down />
+        </span>
       </ActionButton>
       <ActionButton
         label={copied ? "Copied" : "Copy reply"}
