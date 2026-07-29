@@ -41,9 +41,10 @@ export function SocietyPanel({
     x: number;
     y: number;
   } | null>(null);
-  const hovered = hover
-    ? respondents.find((entry) => entry.persona.id === hover.personaId)
-    : undefined;
+  const hovered =
+    hover && hover.personaId !== focusPersonaId
+      ? respondents.find((entry) => entry.persona.id === hover.personaId)
+      : undefined;
 
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card">
