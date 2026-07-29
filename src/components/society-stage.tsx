@@ -26,7 +26,10 @@ export function SocietyStage({
   filters,
   focusPersonaId,
   selectedPersonaId,
+  selectedNodeIds,
+  selectable = false,
   onSelect,
+  onShiftSelect,
   onHover,
   fill = false,
 }: {
@@ -34,7 +37,12 @@ export function SocietyStage({
   filters: Filters;
   focusPersonaId: string | null;
   selectedPersonaId: string | null;
+  /** Ids of nodes gathered into a cluster by shift-clicking. */
+  selectedNodeIds: Set<string>;
+  /** Whether shift-click builds a cluster (only while browsing). */
+  selectable?: boolean;
   onSelect: (personaId: string) => void;
+  onShiftSelect: (nodeId: string) => void;
   onHover: (hover: { personaId: string; x: number; y: number } | null) => void;
   /** Fill the box by cropping, for the narrow column beside an interview. */
   fill?: boolean;
@@ -118,7 +126,33 @@ export function SocietyStage({
                 opacity={
                   isLit(node) ? (inFocus(index) ? 0.62 : 0.22) : 0.06
                 }
-                className="transition-opacity duration-500"
+                className={`transition-opacity duration-500 ${
+                  selectable && isLit(node) ? "cursor-pointer" : ""
+                }`}
+                onClick={(event) => {
+                  if (selectable && isLit(node) && event.shiftKey) {
+                    onShiftSelect(node.id);
+                  }
+                }}
+              />
+            ) : null,
+          )}
+        </g>
+
+        {/* Rings around the shift-selected cluster, so a gathered set reads as
+            one selection rather than a scatter of lit dots. */}
+        <g>
+          {nodes.map((node) =>
+            selectedNodeIds.has(node.id) ? (
+              <circle
+                key={`sel-${node.id}`}
+                cx={node.x}
+                cy={node.y}
+                r={node.personaId !== null ? 22 : 15}
+                fill="none"
+                stroke="var(--accent)"
+                strokeWidth={2.5}
+                className="animate-[fade-in_150ms_ease-out]"
               />
             ) : null,
           )}
@@ -158,7 +192,14 @@ export function SocietyStage({
                 strokeWidth={4}
                 opacity={lit ? (inFocus(index) ? 1 : 0.3) : 0.12}
                 className="cursor-pointer transition-all duration-500"
-                onClick={() => lit && onSelect(node.personaId as string)}
+                onClick={(event) => {
+                  if (!lit) return;
+                  if (selectable && event.shiftKey) {
+                    onShiftSelect(node.id);
+                    return;
+                  }
+                  onSelect(node.personaId as string);
+                }}
                 onMouseEnter={() =>
                   lit &&
                   onHover({
