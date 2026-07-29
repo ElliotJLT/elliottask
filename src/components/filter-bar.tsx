@@ -38,10 +38,6 @@ export function FilterBar({
 }) {
   const [open, setOpen] = useState(false);
 
-  const applied = FACETS.flatMap((facet) =>
-    (filters[facet.key] ?? []).map((value) => ({ facet: facet.key, value })),
-  );
-
   const toggle = (key: FacetKey, value: string) => {
     const current = filters[key] ?? [];
     onChange({
@@ -54,31 +50,6 @@ export function FilterBar({
 
   return (
     <div className="flex items-center gap-2">
-      {applied.map(({ facet, value }) => (
-        <button
-          key={`${facet}-${value}`}
-          type="button"
-          onClick={() => toggle(facet, value)}
-          className="group flex items-center gap-1.5 rounded-full border border-ink bg-ink py-1.5 pr-2.5 pl-3 text-[0.8125rem] font-medium text-white"
-        >
-          {value}
-          <span aria-hidden className="text-white/60 group-hover:text-white">
-            &times;
-          </span>
-          <span className="sr-only">Remove filter</span>
-        </button>
-      ))}
-
-      {applied.length > 0 ? (
-        <button
-          type="button"
-          onClick={() => onChange({})}
-          className="rounded-lg px-2 py-1 text-[0.75rem] font-medium text-ink-muted transition-colors duration-150 hover:text-accent"
-        >
-          Clear all
-        </button>
-      ) : null}
-
       <div className="relative">
         <button
           type="button"
@@ -169,4 +140,50 @@ export function nodeMatches(
   activeOptions: string[],
 ): boolean {
   return matches(node, filters, activeOptions);
+}
+
+/** The filters currently narrowing the view, shown as the state they are. */
+export function AppliedFilters({
+  filters,
+  onChange,
+}: {
+  filters: Filters;
+  onChange: (next: Filters) => void;
+}) {
+  const applied = FACETS.flatMap((facet) =>
+    (filters[facet.key] ?? []).map((value) => ({ facet: facet.key, value })),
+  );
+  if (applied.length === 0) return null;
+
+  return (
+    <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border px-6 py-3">
+      <span className="label mr-1">Filtered by</span>
+      {applied.map(({ facet, value }) => (
+        <button
+          key={`${facet}-${value}`}
+          type="button"
+          onClick={() =>
+            onChange({
+              ...filters,
+              [facet]: (filters[facet] ?? []).filter((entry) => entry !== value),
+            })
+          }
+          className="group flex items-center gap-1.5 rounded-full border border-border-strong bg-surface-sunk py-1 pr-2 pl-3 text-[0.8125rem] font-medium text-ink transition-colors duration-150 hover:border-ink"
+        >
+          {value}
+          <span aria-hidden className="text-ink-muted group-hover:text-ink">
+            &times;
+          </span>
+          <span className="sr-only">Remove filter</span>
+        </button>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange({})}
+        className="ml-1 rounded-lg px-2 py-1 text-[0.75rem] font-medium text-ink-muted transition-colors duration-150 hover:text-accent"
+      >
+        Clear all
+      </button>
+    </div>
+  );
 }

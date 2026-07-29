@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FilterBar, type Filters } from "./filter-bar";
+import { AppliedFilters, FilterBar, type Filters } from "./filter-bar";
 import { SocietyStage } from "./society-stage";
 
 /**
@@ -80,6 +80,10 @@ export function SocietyPanel({
           />
         </div>
       </header>
+
+      {focused ? null : (
+        <AppliedFilters filters={filters} onChange={onFiltersChange} />
+      )}
 
       <div className="flex min-h-0 flex-1 items-center justify-center p-2">
         <div

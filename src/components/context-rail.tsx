@@ -50,9 +50,7 @@ export function ContextRail({
               >
                 Show all
               </button>
-            ) : (
-              <p className="text-[0.75rem] text-ink-muted">Tap to filter</p>
-            )}
+            ) : null}
           </div>
 
           <ul className="mt-4 flex flex-col gap-1">
