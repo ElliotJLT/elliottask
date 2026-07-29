@@ -26,6 +26,7 @@ export function AppShell({
   const router = useRouter();
   const [muted, setMuted] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filters>({});
+  const [recordOpen, setRecordOpen] = useState(true);
 
   const segments = pathname.split("/").filter(Boolean);
   const mode: "browse" | "record" | "interview" =
@@ -61,7 +62,8 @@ export function AppShell({
   // The record keeps one width for its whole life. Opening an interview
   // collapses the society and lets the record slide into its place, so the
   // panel a user was reading is the same object in the same shape, moved.
-  const recordWidth = mode === "browse" ? "0rem" : "26rem";
+  const recordWidth =
+    mode === "browse" || (mode === "interview" && !recordOpen) ? "0rem" : "26rem";
   const societyCap = mode === "interview" ? "0px" : "200vw";
 
   return (
@@ -133,10 +135,30 @@ export function AppShell({
             rewraps while the column opens. Absent entirely until then, or its
             fixed inner width would claim space the society still needs. */}
         {mode === "interview" ? (
-          <div className="flex h-full min-w-0 flex-1 overflow-hidden">
-            <div className="h-full w-[calc(100vw-28.5rem)] shrink-0 overflow-hidden rounded-2xl border border-border">
+          <div className="relative flex h-full min-w-0 flex-1 overflow-hidden">
+            <div
+              className={`h-full shrink-0 overflow-hidden rounded-2xl border border-border ${
+                recordOpen ? "w-[calc(100vw-28.5rem)]" : "w-[calc(100vw-1.5rem)]"
+              }`}
+            >
               {children}
             </div>
+
+            {/* Folds the record away when the transcript is what matters. */}
+            <button
+              type="button"
+              onClick={() => setRecordOpen((open) => !open)}
+              aria-expanded={recordOpen}
+              className="group absolute top-1/2 left-0 z-30 flex h-14 w-3 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-150"
+            >
+              <span className="sr-only">
+                {recordOpen ? "Hide respondent record" : "Show respondent record"}
+              </span>
+              <span
+                aria-hidden
+                className="h-9 w-1 rounded-full bg-border-strong transition-all duration-150 group-hover:h-12 group-hover:bg-accent"
+              />
+            </button>
           </div>
         ) : null}
       </div>
