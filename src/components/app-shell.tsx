@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { society } from "@/lib/graph";
+import { INDUSTRIES, society } from "@/lib/graph";
 import type { ShellData } from "@/lib/shell-data";
 import { ContextRail } from "./context-rail";
 import { RespondentPanel } from "./respondent-panel";
@@ -24,6 +24,7 @@ export function AppShell({
   const pathname = usePathname();
   const router = useRouter();
   const [muted, setMuted] = useState<string[]>([]);
+  const [industries, setIndustries] = useState<string[]>([]);
 
   const segments = pathname.split("/").filter(Boolean);
   const mode: "browse" | "record" | "interview" =
@@ -43,6 +44,12 @@ export function AppShell({
   const activeOptions = data.results
     .map((result) => result.option)
     .filter((option) => !muted.includes(option));
+
+  const shownCount = society.nodes.filter(
+    (node) =>
+      activeOptions.includes(node.option) &&
+      (industries.length === 0 || industries.includes(node.industry)),
+  ).length;
 
   const openRecord = (personaId: string) =>
     router.push(`/respondents/${personaId}`);
@@ -95,14 +102,20 @@ export function AppShell({
           }`}
         >
           <SocietyPanel
-            results={data.results}
             activeOptions={activeOptions}
+            industries={INDUSTRIES}
+            activeIndustries={industries}
+            onToggleIndustry={(industry) =>
+              setIndustries((current) =>
+                current.includes(industry)
+                  ? current.filter((entry) => entry !== industry)
+                  : [...current, industry],
+              )
+            }
+            shownCount={shownCount}
             focusPersonaId={focus?.persona.id ?? null}
             focusName={focus?.persona.name.split(" ")[0] ?? null}
             compact={false}
-            interviewableCount={
-              data.respondents.filter((entry) => entry.conversationId).length
-            }
             populationCount={society.nodes.length}
             onSelect={openRecord}
           />

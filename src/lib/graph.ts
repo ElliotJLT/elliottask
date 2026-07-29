@@ -1,10 +1,18 @@
 import { getResults, listPersonas, getResponse, getOptionIndex } from "./store";
 
+export const INDUSTRIES = [
+  "Technology",
+  "Financial Services",
+  "Venture Capital",
+  "IT Services",
+] as const;
+
 export interface GraphNode {
   id: string;
   x: number;
   y: number;
   option: string;
+  industry: string;
   /** Set for respondents whose full profile is loaded and interviewable. */
   personaId: string | null;
 }
@@ -99,11 +107,23 @@ export function buildSociety(): SocietyLayout {
         pending.splice(match, 1);
       }
 
+      // A respondent's industry comes from their own profile where one is
+      // loaded, and otherwise from the audience mix, so filtering the
+      // population and filtering an interviewable respondent agree.
+      const loaded = personaId
+        ? listPersonas().find((entry) => entry.id === personaId)
+        : undefined;
+      const industry = loaded
+        ? (INDUSTRIES.find((name) => loaded.industry.startsWith(name)) ??
+          INDUSTRIES[0])
+        : INDUSTRIES[Math.floor(random() * INDUSTRIES.length)];
+
       nodes.push({
         id: `nod_${result.option}_${i}`,
         x,
         y,
         option: result.option,
+        industry,
         personaId,
       });
     }

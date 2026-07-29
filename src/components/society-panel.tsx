@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import type { OptionShare } from "@/lib/store";
-import { optionStyles } from "./option-tag";
 import { SocietyStage } from "./society-stage";
 
 /**
@@ -11,20 +9,24 @@ import { SocietyStage } from "./society-stage";
  * live once the context column steps aside for a conversation.
  */
 export function SocietyPanel({
-  results,
   activeOptions,
+  industries,
+  activeIndustries,
+  onToggleIndustry,
+  shownCount,
   focusPersonaId,
   focusName,
-  interviewableCount,
   populationCount,
   compact,
   onSelect,
 }: {
-  results: OptionShare[];
   activeOptions: string[];
+  industries: readonly string[];
+  activeIndustries: string[];
+  onToggleIndustry: (industry: string) => void;
+  shownCount: number;
   focusPersonaId: string | null;
   focusName: string | null;
-  interviewableCount: number;
   populationCount: number;
   compact: boolean;
   onSelect: (personaId: string) => void;
@@ -40,15 +42,16 @@ export function SocietyPanel({
           {focused ? (
             <Link
               href="/"
-              className="group -ml-1.5 flex shrink-0 items-center gap-1.5 rounded-lg px-1.5 py-1 text-[0.75rem] font-medium text-ink-muted transition-colors duration-150 hover:text-ink"
+              aria-label="Back to all respondents"
+              title="All respondents"
+              className="group flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-ink-muted transition-colors duration-150 hover:border-accent hover:text-accent"
             >
               <span
                 aria-hidden
-                className="transition-transform duration-150 group-hover:-translate-x-0.5"
+                className="text-[0.9375rem] leading-none transition-transform duration-150 group-hover:-translate-x-0.5"
               >
                 &larr;
               </span>
-              All respondents
             </Link>
           ) : null}
 
@@ -58,36 +61,32 @@ export function SocietyPanel({
               className={`mt-1.5 max-w-xl text-[0.8125rem] leading-relaxed text-ink-muted ${compact ? "hidden" : ""}`}
             >
               {focused
-                ? `${focusName} and the respondents whose views reach theirs. The rest of the society is still here, behind them. Select another lit respondent to switch.`
-                : "Each dot is one respondent, tied to the neighbours who shape their view and drawn toward the others who answered as they did. Select a lit one to interview them."}
+                ? `${focusName} and the respondents whose views reach theirs. The rest of the society is behind them.`
+                : `${shownCount} of ${populationCount} respondents in view. Each dot is one person, drawn toward the others who answered as they did. Select a lit one to interview.`}
             </p>
           </div>
         </div>
 
-        <div
-          className={`flex shrink-0 flex-col items-end gap-2 ${compact ? "hidden" : ""}`}
-        >
-          <ul className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
-            {results.map((result) => {
-              const off = !activeOptions.includes(result.option);
-              return (
-                <li
-                  key={result.option}
-                  className={`flex items-center gap-1.5 transition-opacity duration-150 ${off ? "opacity-35" : ""}`}
-                >
-                  <span
-                    className={`size-2 rounded-full ${optionStyles(result.option).dot}`}
-                  />
-                  <span className="text-[0.75rem] text-ink-muted">
-                    {result.option}
-                  </span>
-                </li>
-              );
-            })}
-          </ul>
-          <p className="text-[0.75rem] text-ink-muted tabular-nums">
-            {populationCount} shown · {interviewableCount} to interview
-          </p>
+        <div className={`flex shrink-0 items-center gap-1.5 ${focused ? "hidden" : ""}`}>
+          <span className="label mr-1">Audience</span>
+          {industries.map((industry) => {
+            const on = activeIndustries.includes(industry);
+            return (
+              <button
+                key={industry}
+                type="button"
+                onClick={() => onToggleIndustry(industry)}
+                aria-pressed={on}
+                className={`rounded-full border px-3 py-1.5 text-[0.8125rem] font-medium transition-colors duration-150 ${
+                  on
+                    ? "border-ink bg-ink text-white"
+                    : "border-border bg-card text-ink-muted hover:border-border-strong hover:text-ink"
+                }`}
+              >
+                {industry}
+              </button>
+            );
+          })}
         </div>
       </header>
 
@@ -97,6 +96,7 @@ export function SocietyPanel({
         >
           <SocietyStage
             activeOptions={activeOptions}
+            activeIndustries={activeIndustries}
             focusPersonaId={focusPersonaId}
             selectedPersonaId={focusPersonaId}
             onSelect={onSelect}

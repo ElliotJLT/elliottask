@@ -37,13 +37,14 @@ export function RespondentPanel({
             <Link
               href="/"
               aria-label="Back to all respondents"
-              className="group -ml-1 flex shrink-0 items-center gap-1 rounded-lg py-1.5 pr-1 pl-1 text-ink-muted transition-colors duration-150 hover:text-ink"
+              title="All respondents"
+              className="group flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-ink-muted transition-colors duration-150 hover:border-accent hover:text-accent"
             >
-              <span aria-hidden className="text-base leading-none">
+              <span
+                aria-hidden
+                className="text-[0.9375rem] leading-none transition-transform duration-150 group-hover:-translate-x-0.5"
+              >
                 &larr;
-              </span>
-              <span className="max-w-0 overflow-hidden text-[0.75rem] font-medium whitespace-nowrap transition-all duration-200 group-hover:max-w-[7rem]">
-                All respondents
               </span>
             </Link>
           ) : null}

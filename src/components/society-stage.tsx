@@ -22,12 +22,14 @@ function fillFor(option: string): string {
  */
 export function SocietyStage({
   activeOptions,
+  activeIndustries,
   focusPersonaId,
   selectedPersonaId,
   onSelect,
   fill = false,
 }: {
   activeOptions: string[];
+  activeIndustries: string[];
   focusPersonaId: string | null;
   selectedPersonaId: string | null;
   onSelect: (personaId: string) => void;
@@ -37,9 +39,12 @@ export function SocietyStage({
   const { nodes, edges, size } = society;
 
   const isLit = useMemo(() => {
-    const set = new Set(activeOptions);
-    return (option: string) => set.size === 0 || set.has(option);
-  }, [activeOptions]);
+    const options = new Set(activeOptions);
+    const industries = new Set(activeIndustries);
+    return (option: string, industry: string) =>
+      (options.size === 0 || options.has(option)) &&
+      (industries.size === 0 || industries.has(industry));
+  }, [activeOptions, activeIndustries]);
 
   const focus = useMemo(() => {
     if (!focusPersonaId) return null;
@@ -81,7 +86,7 @@ export function SocietyStage({
           {edges.map((edge, index) => {
             const a = nodes[edge.a];
             const b = nodes[edge.b];
-            const lit = isLit(a.option) && isLit(b.option);
+            const lit = isLit(a.option, a.industry) && isLit(b.option, b.industry);
             const near = inFocus(edge.a) && inFocus(edge.b);
             const strength = lit ? (edge.local ? 0.45 : 0.16) : 0.04;
             return (
@@ -110,7 +115,7 @@ export function SocietyStage({
                 r={9}
                 fill={fillFor(node.option)}
                 opacity={
-                  isLit(node.option) ? (inFocus(index) ? 0.62 : 0.22) : 0.08
+                  isLit(node.option, node.industry) ? (inFocus(index) ? 0.62 : 0.22) : 0.06
                 }
                 className="transition-opacity duration-500"
               />
@@ -128,7 +133,7 @@ export function SocietyStage({
                 r={node.personaId === selectedPersonaId ? 26 : 18}
                 fill={fillFor(node.option)}
                 opacity={
-                  isLit(node.option) ? (inFocus(index) ? 0.55 : 0.12) : 0.06
+                  isLit(node.option, node.industry) ? (inFocus(index) ? 0.55 : 0.12) : 0.04
                 }
                 className="transition-all duration-500"
               />
@@ -139,7 +144,7 @@ export function SocietyStage({
         <g>
           {nodes.map((node, index) => {
             if (node.personaId === null) return null;
-            const lit = isLit(node.option);
+            const lit = isLit(node.option, node.industry);
             const selected = node.personaId === selectedPersonaId;
             return (
               <circle
