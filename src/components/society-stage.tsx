@@ -81,7 +81,26 @@ export function SocietyStage({
         <filter id="society-glow" x="-120%" y="-120%" width="340%" height="340%">
           <feGaussianBlur stdDeviation="14" />
         </filter>
+        <radialGradient id="society-field" cx="50%" cy="50%" r="62%">
+          <stop offset="52%" stopColor="var(--ink)" stopOpacity="0" />
+          <stop offset="100%" stopColor="var(--ink)" stopOpacity="0.045" />
+        </radialGradient>
+        <filter id="society-cloud" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="70" />
+        </filter>
       </defs>
+
+      {/* An ambient field behind the map and outside its zoom, so the disc reads
+          as a place rather than empty white: a soft vignette and a few faint
+          drifts. Neutral only, since colour is reserved for the answers, and
+          kept low enough to sit under the orbs and lines without competing. */}
+      <rect x="0" y="0" width={size} height={size} fill="url(#society-field)" />
+      <g filter="url(#society-cloud)" fill="var(--border-strong)">
+        <circle cx={size * 0.31} cy={size * 0.33} r={size * 0.15} opacity="0.4" />
+        <circle cx={size * 0.7} cy={size * 0.4} r={size * 0.12} opacity="0.32" />
+        <circle cx={size * 0.52} cy={size * 0.72} r={size * 0.17} opacity="0.36" />
+        <circle cx={size * 0.72} cy={size * 0.66} r={size * 0.1} opacity="0.28" />
+      </g>
 
       <g
         style={{
