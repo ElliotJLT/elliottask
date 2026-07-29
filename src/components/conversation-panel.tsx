@@ -99,8 +99,8 @@ export function ConversationPanel({
       aria-label={`Interview with ${persona.name}`}
       className="flex h-full w-full min-w-0 flex-col border-l border-border bg-surface"
     >
-      <header className="shrink-0 border-b border-border bg-card px-6 py-3">
-        <div className="flex items-center gap-3">
+      <header className="flex h-[4.75rem] shrink-0 items-center border-b border-border bg-card px-6">
+        <div className="flex w-full items-center gap-3">
           <Link
             href="/"
             className="group flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-[0.8125rem] font-medium text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"

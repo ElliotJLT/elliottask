@@ -32,25 +32,19 @@ export function RespondentPanel({
       className="flex h-full w-full flex-col border-l border-border bg-surface"
     >
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="border-b border-border bg-card px-7 pt-7 pb-6">
-          <div className="flex items-start gap-4">
-            <PersonaMark
-              name={persona.name}
-              choice={response?.choice ?? ""}
-              personaId={persona.id}
-              size="lg"
-            />
-            <div className="min-w-0 flex-1 pt-1">
-              <h2 className="text-[1.125rem] leading-tight font-medium text-ink">
-                {persona.name}
-              </h2>
-              <p className="mt-1 text-[0.875rem] leading-snug text-ink-muted">
-                {persona.role}
-              </p>
-              <p className="text-[0.875rem] leading-snug text-ink-muted">
-                {persona.company}
-              </p>
-            </div>
+        <div className="flex h-[4.75rem] shrink-0 items-center gap-3 border-b border-border bg-card px-7">
+          <PersonaMark
+            name={persona.name}
+            choice={response?.choice ?? ""}
+            personaId={persona.id}
+          />
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate text-[0.9375rem] leading-tight font-medium text-ink">
+              {persona.name}
+            </h2>
+            <p className="mt-0.5 truncate text-[0.8125rem] leading-snug text-ink-muted">
+              {persona.role} · {persona.company}
+            </p>
           </div>
         </div>
 
