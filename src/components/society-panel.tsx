@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import type { ShellRespondent } from "@/lib/shell-data";
 import { AppliedFilters, FilterBar, type Filters } from "./filter-bar";
+import { RespondentSnapshot } from "./respondent-snapshot";
 import { SocietyStage } from "./society-stage";
 
 /**
@@ -11,6 +14,7 @@ import { SocietyStage } from "./society-stage";
  */
 export function SocietyPanel({
   activeOptions,
+  respondents,
   filters,
   onFiltersChange,
   shownCount,
@@ -21,6 +25,7 @@ export function SocietyPanel({
   onSelect,
 }: {
   activeOptions: string[];
+  respondents: ShellRespondent[];
   filters: Filters;
   onFiltersChange: (next: Filters) => void;
   shownCount: number;
@@ -31,6 +36,14 @@ export function SocietyPanel({
   onSelect: (personaId: string) => void;
 }) {
   const focused = Boolean(focusPersonaId);
+  const [hover, setHover] = useState<{
+    personaId: string;
+    x: number;
+    y: number;
+  } | null>(null);
+  const hovered = hover
+    ? respondents.find((entry) => entry.persona.id === hover.personaId)
+    : undefined;
 
   return (
     <section className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-card">
@@ -67,7 +80,7 @@ export function SocietyPanel({
             <span className="ml-2 text-[0.8125rem] text-ink-muted">
               {focused
                 ? `${focusName} and the respondents whose views reach theirs`
-                : `${shownCount} of ${populationCount} in view · select a lit respondent to interview`}
+                : `${shownCount} of ${populationCount} in view · hover a lit respondent, select to open their record`}
             </span>
           </p>
         </div>
@@ -95,8 +108,27 @@ export function SocietyPanel({
             focusPersonaId={focusPersonaId}
             selectedPersonaId={focusPersonaId}
             onSelect={onSelect}
+            onHover={setHover}
             fill={compact}
           />
+
+          {hovered && hover ? (
+            <div
+              className="pointer-events-none absolute z-20 animate-[panel-in_140ms_ease-out]"
+              style={{
+                left: `${hover.x * 100}%`,
+                top: `${hover.y * 100}%`,
+                transform: `translate(${hover.x > 0.55 ? "calc(-100% - 1rem)" : "1rem"}, ${
+                  hover.y > 0.6 ? "calc(-100% - 0.5rem)" : "-0.5rem"
+                })`,
+              }}
+            >
+              <RespondentSnapshot
+                persona={hovered.persona}
+                response={hovered.response}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

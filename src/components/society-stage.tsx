@@ -27,6 +27,7 @@ export function SocietyStage({
   focusPersonaId,
   selectedPersonaId,
   onSelect,
+  onHover,
   fill = false,
 }: {
   activeOptions: string[];
@@ -34,6 +35,7 @@ export function SocietyStage({
   focusPersonaId: string | null;
   selectedPersonaId: string | null;
   onSelect: (personaId: string) => void;
+  onHover: (hover: { personaId: string; x: number; y: number } | null) => void;
   /** Fill the box by cropping, for the narrow column beside an interview. */
   fill?: boolean;
 }) {
@@ -157,6 +159,15 @@ export function SocietyStage({
                 opacity={lit ? (inFocus(index) ? 1 : 0.3) : 0.12}
                 className="cursor-pointer transition-all duration-500"
                 onClick={() => lit && onSelect(node.personaId as string)}
+                onMouseEnter={() =>
+                  lit &&
+                  onHover({
+                    personaId: node.personaId as string,
+                    x: node.x / size,
+                    y: node.y / size,
+                  })
+                }
+                onMouseLeave={() => onHover(null)}
               />
             );
           })}

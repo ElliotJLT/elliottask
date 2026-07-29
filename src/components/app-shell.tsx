@@ -100,6 +100,7 @@ export function AppShell({
         >
           <SocietyPanel
             activeOptions={activeOptions}
+            respondents={data.respondents}
             filters={filters}
             onFiltersChange={setFilters}
             shownCount={shownCount}
