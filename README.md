@@ -40,7 +40,7 @@ Two consequences worth looking at:
 
 ## The work around the chat
 
-A conversation is one moment in a longer job, so the build gives that job somewhere to live.
+A conversation is one moment in a longer job, so the build gives that job somewhere to live. Inspired by designs from frontier players in the LLM search/research space, I thought it was important to lean into Artificial Societies' USP. Thinking of the possibilities of what can be done with this data was one of the most exciting parts of this task for me.
 
 **Resume, don't restart.** Every interview with messages sits in a Recent Interviews list beside the survey: who, the last thing said, whether it's still going. One click resumes it, another starts it fresh with the same respondent.
 
