@@ -23,7 +23,7 @@ export function RespondentSnapshot({
   const firstName = persona.name.split(" ")[0];
 
   return (
-    <div className="pointer-events-none w-[19rem] overflow-hidden rounded-xl border border-border bg-card shadow-[0_16px_40px_-12px_rgba(29,27,23,0.28)]">
+    <div className="w-[19rem] overflow-hidden rounded-xl border border-border bg-card shadow-[0_16px_40px_-12px_rgba(29,27,23,0.28)]">
       <div className="flex items-start gap-3 px-4 pt-4">
         <PersonaMark
           name={persona.name}

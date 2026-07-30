@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { society } from "@/lib/graph";
 import type { ShellRespondent } from "@/lib/shell-data";
 import { AppliedFilters, FilterBar, type Filters } from "./filter-bar";
@@ -46,6 +46,25 @@ export function SocietyPanel({
     hover && hover.personaId !== focusPersonaId
       ? respondents.find((entry) => entry.persona.id === hover.personaId)
       : undefined;
+
+  // The snapshot is hoverable, so leaving a dot doesn't drop it at once: a short
+  // grace lets the cursor cross the gap onto the card and click through to the
+  // record. Entering the card cancels the pending hide; leaving the card drops
+  // it. Without this the card vanishes the instant you move toward it.
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cancelHide = () => {
+    if (hideTimer.current) {
+      clearTimeout(hideTimer.current);
+      hideTimer.current = null;
+    }
+  };
+  const onNodeHover = (
+    next: { personaId: string; x: number; y: number } | null,
+  ) => {
+    cancelHide();
+    if (next) setHover(next);
+    else hideTimer.current = setTimeout(() => setHover(null), 160);
+  };
 
   // A cluster the researcher gathers by shift-clicking, so a shared question can
   // go to a group at once. The interview itself isn't wired up yet; the gesture
@@ -156,7 +175,7 @@ export function SocietyPanel({
             selectable={!focused}
             onSelect={openRespondent}
             onShiftSelect={toggleSelect}
-            onHover={setHover}
+            onHover={onNodeHover}
             fill={compact}
           />
 
@@ -222,8 +241,16 @@ export function SocietyPanel({
           ) : null}
 
           {hovered && hover ? (
-            <div
-              className="pointer-events-none absolute z-20 animate-[fade-in_120ms_ease-out]"
+            <button
+              type="button"
+              onMouseEnter={cancelHide}
+              onMouseLeave={() => setHover(null)}
+              onClick={() => {
+                cancelHide();
+                setHover(null);
+                openRespondent(hovered.persona.id);
+              }}
+              className="absolute z-20 cursor-pointer animate-[fade-in_120ms_ease-out] text-left"
               style={{
                 left: `${hover.x * 100}%`,
                 top: `${hover.y * 100}%`,
@@ -236,7 +263,7 @@ export function SocietyPanel({
                 persona={hovered.persona}
                 response={hovered.response}
               />
-            </div>
+            </button>
           ) : null}
         </div>
       </div>
