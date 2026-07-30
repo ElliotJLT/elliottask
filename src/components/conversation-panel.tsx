@@ -106,9 +106,9 @@ export function ConversationPanel({
   return (
     <section
       aria-label={`Interview with ${persona.name}`}
-      className="flex h-full w-full min-w-0 flex-col bg-surface"
+      className="flex h-full w-full min-w-0 flex-col bg-card"
     >
-      <header className="flex h-[4.75rem] shrink-0 items-center border-b border-border bg-card px-6">
+      <header className="flex h-[4.75rem] shrink-0 items-center border-b border-border bg-surface px-6">
         <div className="flex w-full items-center gap-3">
           <PersonaMark
             name={persona.name}

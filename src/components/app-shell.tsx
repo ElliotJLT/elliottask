@@ -82,8 +82,11 @@ export function AppShell({
   // The record keeps one width for its whole life. Opening an interview
   // collapses the society and lets the record slide into its place, so the
   // panel a user was reading is the same object in the same shape, moved.
+  // In an interview the record folds to a rail rather than vanishing, the same
+  // way the sources column does on the other side of the transcript.
+  const recordCollapsed = mode === "interview" && !recordOpen;
   const recordWidth =
-    mode === "browse" || (mode === "interview" && !recordOpen) ? "0rem" : "26rem";
+    mode === "browse" ? "0rem" : recordCollapsed ? "3.5rem" : "26rem";
   const societyCap = mode === "interview" ? "0px" : "200vw";
 
   return (
@@ -138,7 +141,10 @@ export function AppShell({
           style={{ width: recordWidth }}
           className={`flex h-full shrink-0 overflow-hidden transition-[width] ${glide}`}
         >
-          <div style={{ width: "26rem" }} className="h-full shrink-0 overflow-hidden rounded-2xl border border-border">
+          <div
+            style={{ width: recordCollapsed ? "3.5rem" : "26rem" }}
+            className="h-full shrink-0 overflow-hidden rounded-2xl border border-border"
+          >
             {focus ? (
               <RespondentPanel
                 persona={focus.persona}
@@ -147,6 +153,9 @@ export function AppShell({
                 hasTranscript={focus.hasTranscript}
                 inInterview={mode === "interview"}
                 activeConversationId={openConversationId}
+                collapsed={recordCollapsed}
+                onExpand={() => setRecordOpen(true)}
+                onCollapse={() => setRecordOpen(false)}
               />
             ) : null}
           </div>
@@ -156,36 +165,10 @@ export function AppShell({
             rewraps while the column opens. Absent entirely until then, or its
             fixed inner width would claim space the society still needs. */}
         {mode === "interview" ? (
-          <div className="relative flex h-full min-w-0 flex-1">
+          <div className="flex h-full min-w-0 flex-1">
             <div className="h-full min-w-0 flex-1 overflow-hidden rounded-2xl border border-border">
               {children}
             </div>
-
-            {/* Folds the record away when the transcript is what matters. The
-                same panel control the sources column uses on the far side, so
-                both edges of the workspace fold the same way. */}
-            <button
-              type="button"
-              onClick={() => setRecordOpen((open) => !open)}
-              aria-expanded={recordOpen}
-              aria-label={
-                recordOpen ? "Hide respondent record" : "Show respondent record"
-              }
-              title={recordOpen ? "Hide record" : "Show record"}
-              className="absolute top-1/2 left-0 z-30 flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card text-ink-muted transition-colors duration-150 hover:border-border-strong hover:text-ink"
-            >
-              <svg
-                viewBox="0 0 16 16"
-                aria-hidden
-                className="size-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.4"
-              >
-                <rect x="2.5" y="3" width="11" height="10" rx="1.5" />
-                <path d="M6 3v10" />
-              </svg>
-            </button>
           </div>
         ) : null}
 
