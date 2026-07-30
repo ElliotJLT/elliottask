@@ -70,8 +70,8 @@ export function FindingsSection({
       {open ? (
         findings.length === 0 ? (
           <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-muted">
-            Nothing saved yet. Use the bookmark under any reply to keep it here,
-            with its sources, across every interview in this project.
+            Nothing saved yet. Bookmark a reply to keep it here, sources
+            included.
           </p>
         ) : (
           <ul className="mt-3 flex max-h-[18rem] flex-col gap-2 overflow-y-auto">
