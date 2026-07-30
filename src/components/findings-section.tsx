@@ -37,13 +37,17 @@ export function FindingsSection({
     readFindings,
     serverFindings,
   );
-  const [open, setOpen] = useState(true);
+  // Empty, the section folds to its header so the record stays about the
+  // respondent; it opens itself the moment a finding lands, until the reader
+  // says otherwise.
+  const [manualOpen, setManualOpen] = useState<boolean | null>(null);
+  const open = manualOpen ?? findings.length > 0;
 
   return (
     <div className="px-6 py-5">
       <button
         type="button"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setManualOpen(!open)}
         aria-expanded={open}
         className="flex w-full items-center gap-2"
       >
@@ -65,13 +69,19 @@ export function FindingsSection({
             {findings.length}
           </span>
         ) : null}
+        <span
+          aria-hidden
+          className={`ml-auto text-ink-muted transition-transform duration-200 ${open ? "" : "-rotate-90"}`}
+        >
+          &#8964;
+        </span>
       </button>
 
       {open ? (
         findings.length === 0 ? (
           <p className="mt-3 text-[0.8125rem] leading-relaxed text-ink-muted">
-            Nothing saved yet. Bookmark a reply to keep it here, sources
-            included.
+            Nothing saved yet. Bookmark a reply during an interview to keep it
+            here, sources included.
           </p>
         ) : (
           <ul className="mt-3 flex max-h-[18rem] flex-col gap-2 overflow-y-auto">
