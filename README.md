@@ -61,7 +61,7 @@ No API keys. The chat is mocked per the brief.
 
 ## How I built this
 
-Worth reading if the interesting question is how someone works, not just what they shipped. The commit history is the honest record: over sixty commits, and the first six are all documents.
+This task took me around 4h, limited by token usage on my side which I saw as a good challenge in this scenario. Over sixty commits, and the first six are all documents.
 
 **The complaint list was the spec, and I refused to treat it as one.** Five quotes came with the brief. Taking them literally gets you a tooltip that says "this is AI generated" and a save button. So the first pass was an audit, not a build: `docs/critique.md` separates what clients said from what is actually wrong underneath, which is where "I don't trust it" turns into "fluent invention and grounded fact are rendered identically". Every feature in the table at the top of this README traces to a line in that audit. Anything that didn't, didn't get built.
 
