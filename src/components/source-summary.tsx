@@ -17,7 +17,7 @@ interface Group {
 }
 
 /**
- * A mark per kind of source: quote marks for what the respondent said, a tag
+ * A mark per kind of source: a speech bubble for what the respondent said, a tag
  * for what their profile holds (attributes read like the pills the record
  * shows them as, not a person, so this stays distinct from the record's own
  * profile mark), an open question for what the survey never asked. Colour
@@ -26,10 +26,7 @@ interface Group {
  */
 const ICONS: Record<Group["key"], React.ReactNode> = {
   survey: (
-    <path
-      d="M6 4.5C4.3 5.6 3.5 7.1 3.5 9v2.5h3.2V8.2H5.2c0-1.2.4-2.1 1.3-2.8Zm6 0c-1.7 1.1-2.5 2.6-2.5 4.5v2.5h3.2V8.2h-1.5c0-1.2.4-2.1 1.3-2.8Z"
-      fill="currentColor"
-    />
+    <path d="M14 10a1.33 1.33 0 0 1-1.33 1.33H4.67l-2.67 2.67V3.33a1.33 1.33 0 0 1 1.33-1.33h9.33a1.33 1.33 0 0 1 1.33 1.33z" />
   ),
   profile: (
     <>
@@ -52,7 +49,7 @@ function SourceIcon({ kind }: { kind: Group["key"] }) {
       aria-hidden
       className="size-[1.125rem]"
       fill="none"
-      stroke={kind === "survey" ? "none" : "currentColor"}
+      stroke="currentColor"
       strokeWidth="1.3"
       strokeLinecap="round"
       strokeLinejoin="round"
