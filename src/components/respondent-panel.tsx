@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
+import { readFindings, serverFindings, subscribeFindings } from "@/lib/findings-store";
 import type { Persona, SurveyResponse } from "@/lib/types";
 import { AttributePills } from "./attribute-pills";
 import { FindingsSection } from "./findings-section";
@@ -27,6 +29,38 @@ const PanelIcon = (
   </svg>
 );
 
+/** Who this rail is about, once the record has folded down to an edge. */
+const ProfileIcon = (
+  <svg
+    viewBox="0 0 16 16"
+    aria-hidden
+    className="size-4"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.4"
+    strokeLinecap="round"
+  >
+    <circle cx="8" cy="5.6" r="2.5" />
+    <path d="M3.4 13.2c0-2.4 2-3.9 4.6-3.9s4.6 1.5 4.6 3.9" />
+  </svg>
+);
+
+/** Whether there's saved work to come back to, matching the Findings header mark. */
+const BookmarkIcon = (
+  <svg
+    viewBox="0 0 16 16"
+    aria-hidden
+    className="size-4"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M4 3.2c0-.4.3-.7.7-.7h6.6c.4 0 .7.3.7.7v10.3L8 10.8l-4 2.7V3.2Z" />
+  </svg>
+);
+
 export function RespondentPanel({
   persona,
   response,
@@ -50,8 +84,14 @@ export function RespondentPanel({
 }) {
   const firstName = persona.name.split(" ")[0];
 
-  // Collapsed the record is a rail of who you are talking to, mirroring the
-  // sources column on the far side of the transcript.
+  const findings = useSyncExternalStore(subscribeFindings, readFindings, serverFindings);
+  const findingsForPersona = findings.filter(
+    (finding) => finding.personaId === persona.id,
+  ).length;
+
+  // Collapsed the record is a rail of what it holds, mirroring the sources
+  // column on the far side of the transcript: a mark per kind of content
+  // rather than the respondent's own face, which belongs to the open record.
   if (collapsed) {
     return (
       <div
@@ -68,12 +108,31 @@ export function RespondentPanel({
           {PanelIcon}
         </button>
         <span className="my-1 h-px w-6 bg-border" />
-        <PersonaMark
-          name={persona.name}
-          choice={response?.choice ?? ""}
-          personaId={persona.id}
-          size="sm"
-        />
+        <button
+          type="button"
+          onClick={onExpand}
+          title={`${persona.name}'s profile`}
+          className="flex size-9 items-center justify-center rounded-lg text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
+        >
+          {ProfileIcon}
+        </button>
+        <button
+          type="button"
+          onClick={onExpand}
+          title={
+            findingsForPersona > 0
+              ? `${findingsForPersona} saved finding${findingsForPersona === 1 ? "" : "s"}`
+              : "Findings"
+          }
+          className="relative flex size-9 items-center justify-center rounded-lg text-ink-muted transition-colors duration-150 hover:bg-surface-sunk hover:text-ink"
+        >
+          {BookmarkIcon}
+          {findingsForPersona > 0 ? (
+            <span className="absolute -top-1 -right-1 flex min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[0.625rem] font-medium text-white tabular-nums">
+              {findingsForPersona}
+            </span>
+          ) : null}
+        </button>
       </div>
     );
   }
@@ -83,7 +142,7 @@ export function RespondentPanel({
       aria-label={`Respondent record for ${persona.name}`}
       className="flex h-full w-full flex-col bg-card"
     >
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto pb-6">
         <div className="flex h-[4.75rem] shrink-0 items-center gap-3 border-b border-border bg-surface px-5">
           {inInterview ? (
             <Link
@@ -173,9 +232,24 @@ export function RespondentPanel({
             href={`/interviews/${conversationId}`}
             className="group flex items-center justify-between rounded-xl bg-accent px-5 py-3.5 font-medium text-white transition-colors duration-150 hover:bg-[#bd5637]"
           >
-            {hasTranscript
-              ? `Open interview with ${firstName}`
-              : `Interview ${firstName}`}
+            <span className="flex items-center gap-2.5">
+              <svg
+                viewBox="0 0 16 16"
+                aria-hidden
+                className="size-[1.125rem] shrink-0"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M2.5 8c0-3 2.46-5.5 5.5-5.5S13.5 5 13.5 8s-2.46 5.5-5.5 5.5c-.72 0-1.4-.13-2.03-.38L3 13.5l.55-2.7C2.87 10.1 2.5 9.1 2.5 8Z" />
+                <path d="M5.6 6.9h4.8M5.6 9.1h3.1" />
+              </svg>
+              {hasTranscript
+                ? `Open interview with ${firstName}`
+                : `Interview ${firstName}`}
+            </span>
             <span
               aria-hidden
               className="transition-transform duration-150 group-hover:translate-x-0.5"

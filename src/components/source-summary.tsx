@@ -17,10 +17,12 @@ interface Group {
 }
 
 /**
- * A mark per kind of source: quote marks for what the respondent said, a
- * figure for what their profile holds, an open question for what the survey
- * never asked. Colour still carries grounded against extrapolated, so the icon
- * says which kind of source and the tint says whether it is evidence.
+ * A mark per kind of source: quote marks for what the respondent said, a tag
+ * for what their profile holds (attributes read like the pills the record
+ * shows them as, not a person, so this stays distinct from the record's own
+ * profile mark), an open question for what the survey never asked. Colour
+ * still carries grounded against extrapolated, so the icon says which kind of
+ * source and the tint says whether it is evidence.
  */
 const ICONS: Record<Group["key"], React.ReactNode> = {
   survey: (
@@ -31,8 +33,8 @@ const ICONS: Record<Group["key"], React.ReactNode> = {
   ),
   profile: (
     <>
-      <circle cx="8" cy="5.6" r="2.5" />
-      <path d="M3.4 13.2c0-2.4 2-3.9 4.6-3.9s4.6 1.5 4.6 3.9" />
+      <path d="M2.6 8.3V3.6a1 1 0 0 1 1-1h4.7a1 1 0 0 1 .71.29l4.99 4.99a1 1 0 0 1 0 1.42l-4.7 4.7a1 1 0 0 1-1.42 0L2.9 9.01a1 1 0 0 1-.3-.71Z" />
+      <circle cx="5.6" cy="5.6" r="0.9" fill="currentColor" stroke="none" />
     </>
   ),
   simulated: (

@@ -53,7 +53,7 @@ function ActionButton({
       className={`flex size-7 items-center justify-center rounded-md transition-colors duration-150 ${
         active
           ? solid
-            ? "bg-ink text-white"
+            ? "text-ink"
             : "bg-surface-sunk text-ink"
           : "text-ink-muted hover:bg-surface-sunk hover:text-ink"
       }`}
@@ -244,7 +244,7 @@ function MessageActions({
         onClick={rateUp}
       >
         <span key={upTick} className={upTick > 0 ? pop : "inline-flex"}>
-          <ThumbIcon />
+          <ThumbIcon filled={vote === "up"} />
         </span>
       </ActionButton>
       <ActionButton
@@ -254,7 +254,7 @@ function MessageActions({
         onClick={rateDown}
       >
         <span key={downTick} className={downTick > 0 ? pop : "inline-flex"}>
-          <ThumbIcon down />
+          <ThumbIcon down filled={vote === "down"} />
         </span>
       </ActionButton>
       <ActionButton
@@ -410,13 +410,13 @@ export function MessageThread({
   );
 }
 
-function ThumbIcon({ down = false }: { down?: boolean }) {
+function ThumbIcon({ down = false, filled = false }: { down?: boolean; filled?: boolean }) {
   return (
     <svg
       viewBox="0 0 16 16"
       aria-hidden
       className={`size-[0.9375rem] ${down ? "rotate-180" : ""}`}
-      fill="none"
+      fill={filled ? "currentColor" : "none"}
       stroke="currentColor"
       strokeWidth="1.3"
       strokeLinecap="round"
