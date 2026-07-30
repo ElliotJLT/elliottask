@@ -46,7 +46,7 @@ A conversation is one moment in a longer job, so the build gives that job somewh
 
 **Keep what matters.** Bookmark any reply and it lands in Findings, held with the respondent and its sources across every interview in the project, so research ends somewhere other than a scroll back up the thread.
 
-**Leave with it.** Export a transcript and the provenance travels with it. Each reply carries its grounded quotes and its flagged extrapolations as footnotes, because these end up in decks where the quote and its source have to stay together.
+**Leave with it.** Export a transcript and the provenance travels with it. Each reply carries its grounded quotes and its flagged extrapolations as footnotes, because these end up in decks where the quote and its source have to stay together. This is a basic version of what a sharability/export function could look like. The moat needs to remain the data querying, so this feature would likely involve into something that allows users to lean on custom connectors/MCPs. Keeping the deep dive value firmly within the hands of Artificial Societies.
 
 ## Running it
 
