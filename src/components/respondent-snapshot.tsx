@@ -20,6 +20,8 @@ export function RespondentSnapshot({
   persona: Persona;
   response: SurveyResponse | undefined;
 }) {
+  const firstName = persona.name.split(" ")[0];
+
   return (
     <div className="pointer-events-none w-[19rem] overflow-hidden rounded-xl border border-border bg-card shadow-[0_16px_40px_-12px_rgba(29,27,23,0.28)]">
       <div className="flex items-start gap-3 px-4 pt-4">
@@ -48,8 +50,14 @@ export function RespondentSnapshot({
         </div>
       ) : null}
 
-      <p className="mt-3.5 border-t border-border bg-surface-sunk px-4 py-2.5 text-[0.75rem] font-medium text-ink-muted">
-        Open record for the full profile and sources
+      <p className="mt-3.5 flex items-center gap-1.5 border-t border-border bg-surface-sunk px-4 py-2.5 text-[0.75rem] font-medium text-accent">
+        Dive into the data and interview {firstName}
+        <span
+          aria-hidden
+          className="animate-[nudge-x_900ms_ease-in-out_infinite]"
+        >
+          &rarr;
+        </span>
       </p>
     </div>
   );
