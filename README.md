@@ -1,6 +1,6 @@
 # Artificial Societies - Task
 
-A rebuild of Radiant's persona chat: the surface clients use to interview a respondent after running a simulated survey.
+A rebuild of the persona chat: the surface clients use to interview a respondent after running a simulated survey.
 
 The old chat works. Clients don't trust it and can't tell what it's for, which are different problems with a common cause: nothing in the interface says where an answer came from.
 
