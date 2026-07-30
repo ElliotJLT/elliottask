@@ -1,6 +1,6 @@
-# Radiant — Persona Chat v2
+# Artificial Societies - Task
 
-A rebuild of the persona chat: the surface clients use to interview a respondent after running a simulated survey. Built for the Artificial Societies product task.
+A rebuild of Radiant's persona chat: the surface clients use to interview a respondent after running a simulated survey.
 
 The old chat works. Clients don't trust it and can't tell what it's for, which are different problems with a common cause: nothing in the interface says where an answer came from.
 
@@ -11,7 +11,7 @@ The old chat works. Clients don't trust it and can't tell what it's for, which a
 | What clients said | What's actually wrong | What's built |
 |---|---|---|
 | "I don't know when or why I should use the chats" | The chat opens cold. Its only call to action names the mechanism, not the reason. | Interviews are reached through the population, so you arrive having chosen someone and knowing why. An interview with no messages opens with questions derived from that respondent's own answer, not generic prompts. |
-| "I keep losing my chats after I log off" | No persistence. The chat is a modal over a blurred graph and closing it destroys the session. | Transcripts are written to browser storage and read back through React's external-store API, so a refresh mid-interview loses nothing. Every started interview lands in a Recent Interviews list with its last message and status, one click to resume or start fresh. |
+| "I keep losing my chats after I log off" | No persistence. The chat is a modal over a blurred graph and closing it destroys the session. | Every started interview lands in a Recent Interviews list on the first page, with the last thing said and whether it's finished, one click to resume. That's the actual fix: not losing the open chat is table stakes, but "I keep losing my chats" is answered by having somewhere to find them again. The transcript itself also survives a refresh mid-interview, held in browser storage and read back through React's external-store API. |
 | "I don't know any details about who I'm talking to" | The rich profile sits in the results view and vanishes when the chat opens. | The respondent record sits beside the transcript for the whole conversation, so every claim can be checked against the profile that produced it. |
 | "I don't trust the chat and their responses" | A blanket disclaimer at the top of the thread concedes the problem and manages none of it. | No disclaimer. Claims are marked individually, and the respondent refuses questions it can't answer from data. |
 | "How do I know if what they're saying is backed by real data or just made up?" | Fluent invention and grounded fact look identical. | Every claim carries a marker: solid for grounded in the survey answer or profile, dashed for the model reasoning past both. Sources sit under each reply with the verbatim quote. |
@@ -55,7 +55,9 @@ npm install
 npm run dev
 ```
 
-No API keys. The chat is mocked per the brief. Still needs deploying for a submittable URL.
+No API keys. The chat is mocked per the brief.
+
+**Live:** https://elliottask.vercel.app/
 
 ## How I built this
 
@@ -81,9 +83,11 @@ Worth reading if the interesting question is how someone works, not just what th
 
 **Lean the trust work on the refusal, not the markers.** Every claim carries a grounded or extrapolated marker, on the assumption that marking raises trust. It might not. A dashed marker can read as "made up" rather than "reasoned past the data", and take the whole conversation down with it. The mark that clearly earns its place is the refusal, where the persona won't speak for people who weren't surveyed and points at running another survey, honest and commercially right in one move. I'd make the per-claim marks quieter, put the weight on that moment, and test whether it reads as more trustworthy rather than less.
 
-**Put a designer on the surface I deliberately under-reached.** The palette is tuned for one job: keeping four survey options separable from each other and from the grounded/simulated pair, at accessible contrast, so no colour in the interface is ever decorative. That was the right trade for a tool whose whole argument is evidence, and it is the reason the provenance reads at a glance. It also leaves the product cooler than Radiant's brand deserves, and it has no dark mode. Both are the work of someone who does colour systems for a living: an expressive palette that carries warmth and still holds the data encoding, built twice for light and dark with the semantic tokens already in `globals.css` as the seam. The same goes for the society. It's a 2D map because position has to mean community and stay put between visits, which rules out free rotation as a default. Whether a dimensional, manipulable version of that map could hold the encoding and add real spatial understanding is a genuine design question, and a designer plus a graphics engineer would answer it better than I would alone. I've built to a system I can defend line by line; those two are where a specialist multiplies it rather than tidies it.
+**Turn the refusal into the next commission.** "I'd be guessing" is the persona telling a client exactly where their survey stops covering the population. Right now that's just honesty. Log which questions trigger a refusal most often across a client's interviews and surface the pattern back as a suggested next survey, so closing the gap is the product's own next move rather than something the client has to think up cold. Provenance earns the trust; the refusal is where that trust turns into the next sale, which is the retention and upsell case for the whole feature.
 
-**Real persistence.** Browser storage answers the complaint but doesn't survive a device change. The domain types in `src/lib/types.ts` are shaped the way the production schema would be, one type per table with references as foreign keys, so the store functions in `src/lib/store.ts` are the seam a real database slots behind.
+**Put a designer on the palette.** It's tuned for one job: keeping four survey options separable from each other and from the grounded/simulated pair, at accessible contrast, so no colour in the interface is ever decorative. That's the right trade for a tool whose whole argument is evidence, and it's the reason provenance reads at a glance. It also leaves the product cooler than Radiant's brand deserves, and there's no dark mode. Both are the work of someone who does colour systems for a living: an expressive palette that carries warmth and still holds the data encoding, built twice for light and dark, with the semantic tokens already in `globals.css` as the seam.
+
+**Explore the society as a space worth spending time in, not just a filtered view.** Right now the map is browse, filter, click through, and that's as far as it goes. Obsidian's graph view earns the attention it gets because you can open a node into its local neighbourhood, follow a thread of similar notes, and the shape of the graph becomes part of how you understand the material, which is close to what a survey population actually is. I don't think anyone owns that territory for survey data yet. An expandable tree from one respondent into who answered like them, a "similar cases" panel that reads like backlinks, both feel like where this graph wants to go. This is a design problem before it's an engineering one: what expands, what a wrong click teaches someone, how far the metaphor holds before it stops being honest about a sample. I'd want to prototype it with a designer rather than guess my way there alone.
 
 **The society at full scale.** The graph renders a 250-respondent sample. Three thousand nodes needs aggregation, level-of-detail, and probably canvas rather than SVG. The interface says "a sample" rather than pretending otherwise, which is honest but not a solution.
 
