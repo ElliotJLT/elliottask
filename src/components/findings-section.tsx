@@ -40,7 +40,7 @@ export function FindingsSection({
   const [open, setOpen] = useState(true);
 
   return (
-    <div className="border-b border-border px-6 py-5">
+    <div className="px-6 py-5">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
@@ -65,12 +65,6 @@ export function FindingsSection({
             {findings.length}
           </span>
         ) : null}
-        <span
-          aria-hidden
-          className={`ml-auto text-ink-muted transition-transform duration-200 ${open ? "" : "-rotate-90"}`}
-        >
-          &#8964;
-        </span>
       </button>
 
       {open ? (

@@ -156,25 +156,35 @@ export function AppShell({
             rewraps while the column opens. Absent entirely until then, or its
             fixed inner width would claim space the society still needs. */}
         {mode === "interview" ? (
-          <div className="relative flex h-full min-w-0 flex-1 overflow-hidden">
+          <div className="relative flex h-full min-w-0 flex-1">
             <div className="h-full min-w-0 flex-1 overflow-hidden rounded-2xl border border-border">
               {children}
             </div>
 
-            {/* Folds the record away when the transcript is what matters. */}
+            {/* Folds the record away when the transcript is what matters. The
+                same panel control the sources column uses on the far side, so
+                both edges of the workspace fold the same way. */}
             <button
               type="button"
               onClick={() => setRecordOpen((open) => !open)}
               aria-expanded={recordOpen}
-              className="group absolute top-1/2 left-0 z-30 flex h-14 w-3 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-150"
+              aria-label={
+                recordOpen ? "Hide respondent record" : "Show respondent record"
+              }
+              title={recordOpen ? "Hide record" : "Show record"}
+              className="absolute top-1/2 left-0 z-30 flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-card text-ink-muted transition-colors duration-150 hover:border-border-strong hover:text-ink"
             >
-              <span className="sr-only">
-                {recordOpen ? "Hide respondent record" : "Show respondent record"}
-              </span>
-              <span
+              <svg
+                viewBox="0 0 16 16"
                 aria-hidden
-                className="h-9 w-1 rounded-full bg-border-strong transition-all duration-150 group-hover:h-12 group-hover:bg-accent"
-              />
+                className="size-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+              >
+                <rect x="2.5" y="3" width="11" height="10" rx="1.5" />
+                <path d="M6 3v10" />
+              </svg>
             </button>
           </div>
         ) : null}

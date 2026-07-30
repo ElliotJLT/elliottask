@@ -143,7 +143,7 @@ export function SocietyPanel({
         <AppliedFilters filters={filters} onChange={onFiltersChange} />
       )}
 
-      <div className="flex min-h-0 flex-1 items-center justify-center bg-surface-sunk p-2">
+      <div className="flex min-h-0 flex-1 items-center justify-center p-2">
         <div
           className={`relative h-full w-full ${compact ? "" : "aspect-square max-h-full max-w-full"}`}
         >

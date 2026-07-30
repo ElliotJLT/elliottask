@@ -33,11 +33,14 @@ function ActionButton({
   label,
   onClick,
   active,
+  /** A rating is a stated position, so it reads as ink rather than a tint. */
+  solid = false,
   children,
 }: {
   label: string;
   onClick: () => void;
   active?: boolean;
+  solid?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -49,7 +52,9 @@ function ActionButton({
       aria-pressed={active}
       className={`flex size-7 items-center justify-center rounded-md transition-colors duration-150 ${
         active
-          ? "bg-surface-sunk text-ink"
+          ? solid
+            ? "bg-ink text-white"
+            : "bg-surface-sunk text-ink"
           : "text-ink-muted hover:bg-surface-sunk hover:text-ink"
       }`}
     >
@@ -235,6 +240,7 @@ function MessageActions({
       <ActionButton
         label={vote === "up" ? "Rated helpful" : "Helpful"}
         active={vote === "up"}
+        solid
         onClick={rateUp}
       >
         <span key={upTick} className={upTick > 0 ? pop : "inline-flex"}>
@@ -244,6 +250,7 @@ function MessageActions({
       <ActionButton
         label={vote === "down" ? "Rated unhelpful" : "Not helpful"}
         active={vote === "down"}
+        solid
         onClick={rateDown}
       >
         <span key={downTick} className={downTick > 0 ? pop : "inline-flex"}>
