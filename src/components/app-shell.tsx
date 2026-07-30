@@ -82,8 +82,11 @@ export function AppShell({
   // The record keeps one width for its whole life. Opening an interview
   // collapses the society and lets the record slide into its place, so the
   // panel a user was reading is the same object in the same shape, moved.
+  // In an interview the record folds to a rail rather than vanishing, the same
+  // way the sources column does on the other side of the transcript.
+  const recordCollapsed = mode === "interview" && !recordOpen;
   const recordWidth =
-    mode === "browse" || (mode === "interview" && !recordOpen) ? "0rem" : "26rem";
+    mode === "browse" ? "0rem" : recordCollapsed ? "3.5rem" : "26rem";
   const societyCap = mode === "interview" ? "0px" : "200vw";
 
   return (
@@ -138,7 +141,10 @@ export function AppShell({
           style={{ width: recordWidth }}
           className={`flex h-full shrink-0 overflow-hidden transition-[width] ${glide}`}
         >
-          <div style={{ width: "26rem" }} className="h-full shrink-0 overflow-hidden rounded-2xl border border-border">
+          <div
+            style={{ width: recordCollapsed ? "3.5rem" : "26rem" }}
+            className="h-full shrink-0 overflow-hidden rounded-2xl border border-border"
+          >
             {focus ? (
               <RespondentPanel
                 persona={focus.persona}
@@ -146,6 +152,10 @@ export function AppShell({
                 conversationId={focus.conversationId}
                 hasTranscript={focus.hasTranscript}
                 inInterview={mode === "interview"}
+                activeConversationId={openConversationId}
+                collapsed={recordCollapsed}
+                onExpand={() => setRecordOpen(true)}
+                onCollapse={() => setRecordOpen(false)}
               />
             ) : null}
           </div>
@@ -155,26 +165,10 @@ export function AppShell({
             rewraps while the column opens. Absent entirely until then, or its
             fixed inner width would claim space the society still needs. */}
         {mode === "interview" ? (
-          <div className="relative flex h-full min-w-0 flex-1 overflow-hidden">
+          <div className="flex h-full min-w-0 flex-1">
             <div className="h-full min-w-0 flex-1 overflow-hidden rounded-2xl border border-border">
               {children}
             </div>
-
-            {/* Folds the record away when the transcript is what matters. */}
-            <button
-              type="button"
-              onClick={() => setRecordOpen((open) => !open)}
-              aria-expanded={recordOpen}
-              className="group absolute top-1/2 left-0 z-30 flex h-14 w-3 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full transition-colors duration-150"
-            >
-              <span className="sr-only">
-                {recordOpen ? "Hide respondent record" : "Show respondent record"}
-              </span>
-              <span
-                aria-hidden
-                className="h-9 w-1 rounded-full bg-border-strong transition-all duration-150 group-hover:h-12 group-hover:bg-accent"
-              />
-            </button>
           </div>
         ) : null}
 

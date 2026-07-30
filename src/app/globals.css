@@ -97,6 +97,48 @@ body {
   }
 }
 
+/* The staged pause: three dots lifting in sequence. Honest about duration
+   without pretending the persona is typing. */
+@keyframes typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+  30% {
+    transform: translateY(-3px);
+    opacity: 1;
+  }
+}
+
+/* A recent chat invites the click with a small repeating nudge on hover. */
+@keyframes nudge-x {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+/* A rating registers with a small pop rather than a silent state flip. */
+@keyframes thumb-pop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.35);
+  }
+  70% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
 /* The interview arrives whole rather than growing into place. */
 @keyframes panel-rise {
   from {

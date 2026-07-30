@@ -188,7 +188,7 @@ export function SourceSummary({
       aria-label="Sources used in this interview"
       className="flex h-full w-full flex-col bg-card"
     >
-      <div className="flex h-[4.75rem] shrink-0 items-center justify-between gap-3 border-b border-border px-5">
+      <div className="flex h-[4.75rem] shrink-0 items-center justify-between gap-3 border-b border-border bg-surface px-5">
         <p className="label">Sources</p>
         <button
           type="button"

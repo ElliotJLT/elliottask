@@ -1,4 +1,5 @@
-import { getOptionIndex } from "@/lib/store";
+import Image from "next/image";
+import { getOptionIndex, getPersona } from "@/lib/store";
 
 const TINTS = ["--data-1", "--data-2", "--data-3", "--data-4"];
 
@@ -27,9 +28,10 @@ const SIZES = {
 } as const;
 
 /**
- * Respondents are constructed, not photographed. The mark is generated from
- * the respondent's own id and tinted with their answer, so it is recognisable
- * and consistent without ever implying a record of a real person.
+ * A respondent's face. Where a portrait is loaded it carries the mark, tinted
+ * to their answer; otherwise a bloom generated from their id stands in, so the
+ * fallback is still recognisable and consistent. Initials sit underneath both,
+ * which is what a portrait that fails to load falls back to.
  */
 export function PersonaMark({
   name,
@@ -45,6 +47,7 @@ export function PersonaMark({
   const tint = `var(${TINTS[getOptionIndex(choice)] ?? TINTS[0]})`;
   const seed = seedOf(personaId ?? name);
   const dimensions = SIZES[size];
+  const avatarUrl = personaId ? getPersona(personaId)?.avatarUrl : null;
 
   // Three soft blooms placed from the seed give each respondent a distinct
   // texture while staying inside their answer's colour.
@@ -93,6 +96,15 @@ export function PersonaMark({
       >
         {initials(name)}
       </span>
+      {avatarUrl ? (
+        <Image
+          src={avatarUrl}
+          alt=""
+          fill
+          sizes="80px"
+          className="object-cover"
+        />
+      ) : null}
     </span>
   );
 }

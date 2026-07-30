@@ -82,8 +82,29 @@ export interface Conversation {
   personaId: string;
   surveyId: string;
   title: string;
+  /**
+   * Where the interview stands. `completed` is a durable state a researcher
+   * sets when they are done with someone; everything live is `in_progress`.
+   */
+  status: "in_progress" | "completed";
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * A persona reply a researcher pinned to the project's findings. It carries its
+ * own copy of the message and the sources behind it, so a finding stays intact
+ * as evidence even after the interview it came from moves on.
+ */
+export interface Finding {
+  id: string;
+  conversationId: string;
+  personaId: string;
+  personaName: string;
+  choice: string;
+  content: string;
+  citations: Citation[];
+  savedAt: string;
 }
 
 /**

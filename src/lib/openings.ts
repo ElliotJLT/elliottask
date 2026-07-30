@@ -30,3 +30,25 @@ export function suggestedOpenings(response: SurveyResponse): string[] {
 
   return openings;
 }
+
+/**
+ * Once a conversation is under way the suggestions turn into follow-ups. They
+ * stay derived from this respondent's answer, and they deliberately probe the
+ * seams the provenance system is built to show: how far the answer generalises,
+ * what would move it, and where it stops being grounded.
+ */
+export function suggestedFollowUps(response: SurveyResponse): string[] {
+  const contender = getResults()
+    .filter((result) => result.option !== response.choice)
+    .sort((a, b) => b.share - a.share)[0];
+
+  const followUps = [`Would everyone who chose ${response.choice} say the same?`];
+
+  if (contender) {
+    followUps.push(`What would make you switch to ${contender.option}?`);
+  } else {
+    followUps.push("Where does your answer stop being backed by data?");
+  }
+
+  return followUps;
+}

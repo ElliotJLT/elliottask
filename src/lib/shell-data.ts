@@ -2,17 +2,16 @@ import {
   getCitations,
   getConversationForPersona,
   getMessages,
-  getPersona,
   getResponse,
   getResults,
   getSurvey,
   listInsights,
   listPersonas,
-  listStartedConversations,
   type OptionShare,
 } from "./store";
 import type {
   Citation,
+  Conversation,
   Insight,
   Message,
   Persona,
@@ -27,12 +26,18 @@ export interface ShellRespondent {
   hasTranscript: boolean;
 }
 
-export interface ShellSaved {
+/**
+ * Every persona's interview slot, started or not. The recent list is built on
+ * the client from live transcripts, so a conversation begun this session shows
+ * up beside the seeded ones rather than waiting on a server the mock lacks.
+ */
+export interface ShellConversation {
   conversationId: string;
+  personaId: string;
   personaName: string;
   title: string;
   choice: string;
-  updatedAt: string;
+  status: Conversation["status"];
 }
 
 export interface ShellData {
@@ -40,7 +45,7 @@ export interface ShellData {
   results: OptionShare[];
   insights: Insight[];
   respondents: ShellRespondent[];
-  saved: ShellSaved[];
+  conversations: ShellConversation[];
   transcripts: Record<string, { messages: Message[]; citations: Citation[] }>;
 }
 
@@ -76,12 +81,19 @@ export function getShellData(): ShellData {
           ];
         }),
     ),
-    saved: listStartedConversations().map((conversation) => ({
-      conversationId: conversation.id,
-      personaName: getPersona(conversation.personaId)?.name ?? "Unknown",
-      title: conversation.title,
-      choice: getResponse(conversation.personaId)?.choice ?? "",
-      updatedAt: conversation.updatedAt,
-    })),
+    conversations: listPersonas().flatMap((persona) => {
+      const conversation = getConversationForPersona(persona.id);
+      if (!conversation) return [];
+      return [
+        {
+          conversationId: conversation.id,
+          personaId: persona.id,
+          personaName: persona.name,
+          title: conversation.title,
+          choice: getResponse(persona.id)?.choice ?? "",
+          status: conversation.status,
+        },
+      ];
+    }),
   };
 }

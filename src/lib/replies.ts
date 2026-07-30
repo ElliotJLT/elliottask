@@ -41,7 +41,12 @@ function detect(question: string, response: SurveyResponse): Intent {
   const text = question.toLowerCase();
 
   if (BEYOND_SIGNALS.some((signal) => text.includes(signal))) return "beyond";
-  if (text.includes("instead") || text.includes("would it take")) {
+  if (
+    text.includes("instead") ||
+    text.includes("would it take") ||
+    text.includes("switch") ||
+    text.includes("make you")
+  ) {
     return "counterfactual";
   }
   if (text.includes("you said") || text.includes("what did you mean")) {

@@ -16,10 +16,8 @@ export function ProvenanceNote({ name }: { name: string }) {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[0.8125rem] font-medium transition-colors duration-150 ${
-          open
-            ? "border-border-strong bg-surface-sunk text-ink"
-            : "border-border bg-card text-ink-muted hover:border-border-strong hover:text-ink"
+        className={`flex items-center gap-1.5 text-[0.8125rem] font-medium transition-colors duration-150 ${
+          open ? "text-ink" : "text-ink-muted hover:text-ink"
         }`}
       >
         <svg
